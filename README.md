@@ -8,3 +8,7 @@ The technique is based on hashing. It's easy to calculate hash of given website 
 Usage: `dotnet passgen.dll <website> [master-pass]`
 
 master-pass can be provided with command line argument, environment variable PG_SALT or stored in text file under your home directory. 
+
+You can download nuget package from [GitHub packages](https://github.com/SpinDOS/PassGen/packages) and install it as dotnet global tool with the following command: `dotnet tool install passgen --global --add-source "path/to/directory/containing/passgen.1.0.0.nupkg"`
+
+![Build status](https://github.com/SpinDOS/PassGen/workflows/Build%20and%20upload%20nupkg/badge.svg)
