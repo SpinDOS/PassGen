@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassGen", "PassGen\PassGen.csproj", "{A2C2BDB2-CAF1-496B-9997-CD3F7E9B107C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassGen.GlobalTool", "PassGen.GlobalTool\PassGen.GlobalTool.csproj", "{A2C2BDB2-CAF1-496B-9997-CD3F7E9B107C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassGen.Lib", "PassGen.Lib\PassGen.Lib.csproj", "{079AC93D-1931-43E3-ABD4-E36DD2AB379F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -12,5 +14,9 @@ Global
 		{A2C2BDB2-CAF1-496B-9997-CD3F7E9B107C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A2C2BDB2-CAF1-496B-9997-CD3F7E9B107C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A2C2BDB2-CAF1-496B-9997-CD3F7E9B107C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{079AC93D-1931-43E3-ABD4-E36DD2AB379F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{079AC93D-1931-43E3-ABD4-E36DD2AB379F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{079AC93D-1931-43E3-ABD4-E36DD2AB379F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{079AC93D-1931-43E3-ABD4-E36DD2AB379F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

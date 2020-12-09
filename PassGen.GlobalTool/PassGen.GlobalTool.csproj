@@ -14,4 +14,8 @@
         <RepositoryUrl>https://github.com/SpinDOS/PassGen</RepositoryUrl>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\PassGen.Lib\PassGen.Lib.csproj" />
+    </ItemGroup>
+
 </Project>

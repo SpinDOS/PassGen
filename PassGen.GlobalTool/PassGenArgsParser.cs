@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace PassGen
+namespace PassGen.GlobalTool
 {
     public sealed class PassGenArgsParser
     {

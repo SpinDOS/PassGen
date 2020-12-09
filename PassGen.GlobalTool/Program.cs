@@ -1,6 +1,7 @@
 ﻿using System;
+using PassGen.Lib;
 
-namespace PassGen
+namespace PassGen.GlobalTool
 {
     internal static class Program
     {
@@ -13,7 +14,7 @@ namespace PassGen
             var parsedArgs = passGenArgsParser.GetParsedArgs();
             
             var passwordGenerator = new PasswordGenerator();
-            var password = passwordGenerator.GeneratePassword(parsedArgs);
+            var password = passwordGenerator.GeneratePassword(parsedArgs.Target, parsedArgs.Salt);
             
             Console.WriteLine(password);
         }

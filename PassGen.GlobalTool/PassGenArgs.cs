@@ -1,4 +1,4 @@
-namespace PassGen
+namespace PassGen.GlobalTool
 {
     public struct PassGenArgs
     {

@@ -1,13 +1,13 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace PassGen
+namespace PassGen.Lib
 {
     public sealed class PasswordGenerator
     {
-        public string GeneratePassword(PassGenArgs passGenArgs)
+        public string GeneratePassword(string target, string salt)
         {
-            var stringToHash = $"{passGenArgs.Target}@{passGenArgs.Salt}";
+            var stringToHash = $"{target}@{salt}";
             var generatedPassword = CalculateSha512Hash(stringToHash);
 
             TakeFirst8Chars(generatedPassword);
