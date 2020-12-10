@@ -4,6 +4,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassGen.GlobalTool", "PassG
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassGen.Lib", "PassGen.Lib\PassGen.Lib.csproj", "{079AC93D-1931-43E3-ABD4-E36DD2AB379F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassGen.Xamarin", "PassGen.Xamarin\PassGen.Xamarin\PassGen.Xamarin.csproj", "{73938DE5-DF21-4621-B6C4-254409B1C58B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassGen.Xamarin.Android", "PassGen.Xamarin\PassGen.Xamarin.Android\PassGen.Xamarin.Android.csproj", "{A9CD71B0-6F1B-42B5-B5F6-B29563823DFD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassGen.Xamarin.iOS", "PassGen.Xamarin\PassGen.Xamarin.iOS\PassGen.Xamarin.iOS.csproj", "{682AEF64-C2B8-473E-AE30-B8B974B752D3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +24,17 @@ Global
 		{079AC93D-1931-43E3-ABD4-E36DD2AB379F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{079AC93D-1931-43E3-ABD4-E36DD2AB379F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{079AC93D-1931-43E3-ABD4-E36DD2AB379F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73938DE5-DF21-4621-B6C4-254409B1C58B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73938DE5-DF21-4621-B6C4-254409B1C58B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73938DE5-DF21-4621-B6C4-254409B1C58B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73938DE5-DF21-4621-B6C4-254409B1C58B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9CD71B0-6F1B-42B5-B5F6-B29563823DFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9CD71B0-6F1B-42B5-B5F6-B29563823DFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9CD71B0-6F1B-42B5-B5F6-B29563823DFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9CD71B0-6F1B-42B5-B5F6-B29563823DFD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{682AEF64-C2B8-473E-AE30-B8B974B752D3}.Debug|Any CPU.ActiveCfg = Debug|iPhoneSimulator
+		{682AEF64-C2B8-473E-AE30-B8B974B752D3}.Debug|Any CPU.Build.0 = Debug|iPhoneSimulator
+		{682AEF64-C2B8-473E-AE30-B8B974B752D3}.Release|Any CPU.ActiveCfg = Release|iPhoneSimulator
+		{682AEF64-C2B8-473E-AE30-B8B974B752D3}.Release|Any CPU.Build.0 = Release|iPhoneSimulator
 	EndGlobalSection
 EndGlobal
