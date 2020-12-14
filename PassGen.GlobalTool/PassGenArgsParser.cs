@@ -5,6 +5,12 @@ using System.Runtime.InteropServices;
 
 namespace PassGen.GlobalTool
 {
+    public sealed class PassGenArgsParseException : ArgumentException
+    {
+        public PassGenArgsParseException(string message) : base(message) { }
+        public PassGenArgsParseException(string message, Exception innerException) : base(message, innerException) { }
+    }
+    
     public sealed class PassGenArgsParser
     {
         public static readonly string SaltEnvironmentVariableName = "PG_SALT";
@@ -64,9 +70,9 @@ namespace PassGen.GlobalTool
         private void PrintSaltHelp()
         {
             Console.WriteLine("Salt must be provided with one of the following ways: ");
-            Console.WriteLine("Command line arguments: dotnet passgen.dll <target> [salt]");
-            Console.WriteLine("Environment variable: " + SetSaltEnvVariableCommand);
-            Console.WriteLine("Contents of passgen salt file in your home directory: " + SaltFilePathForHelp);
+            Console.WriteLine("1. Command line arguments: dotnet passgen.dll <target> [salt]");
+            Console.WriteLine("2. Environment variable: " + SetSaltEnvVariableCommand);
+            Console.WriteLine("3. Contents of passgen salt file in your home directory: " + SaltFilePathForHelp);
         }
 
         private bool AreValidArgs(string[] args) => 
@@ -74,17 +80,40 @@ namespace PassGen.GlobalTool
         
         private bool TryExtractSalt(string[] args, out string salt)
         {
-            salt = TryExtractSaltFromArgs(args) ??
-                   TryExtractSaltFromEnvironment() ??
-                   TryExtractSaltFromHomeDirectory();
-            return salt != null;
+            try
+            {
+                salt = TryExtractSaltFromArgs(args) ??
+                       TryExtractSaltFromEnvironment() ??
+                       TryExtractSaltFromHomeDirectory();
+            }
+            catch (PassGenArgsParseException e)
+            {
+                Console.WriteLine(e.Message);
+                salt = null;
+            }
+            
+            return !string.IsNullOrEmpty(salt);
         }
 
-        private string TryExtractSaltFromArgs(string[] args) => 
-            args.Length == 2? args[1] : null;
+        private string TryExtractSaltFromArgs(string[] args)
+        {
+            if (args.Length != 2)
+                return null;
 
-        private string TryExtractSaltFromEnvironment() =>
-            Environment.GetEnvironmentVariable(SaltEnvironmentVariableName);
+            var salt = args[1];
+            if (string.IsNullOrEmpty(salt))
+                throw new PassGenArgsParseException("Salt argument should not be empty");
+
+            return salt;
+        }
+
+        private string TryExtractSaltFromEnvironment()
+        {
+            var salt = Environment.GetEnvironmentVariable(SaltEnvironmentVariableName);
+            if (salt == string.Empty)
+                throw new PassGenArgsParseException($"{SaltEnvironmentVariableName} environment variable should not contain empty salt");
+            return salt;
+        }
 
         private string TryExtractSaltFromHomeDirectory()
         {
@@ -104,17 +133,17 @@ namespace PassGen.GlobalTool
             }
             catch (Exception e) when (e is IOException || e is UnauthorizedAccessException)
             {
-                Console.WriteLine("Could not access salt file in .passgen directory");
-                return null;
+                throw new PassGenArgsParseException($"Could not access secret salt file {SaltFilePathForHelp}", e);
             }
 
             if (lines == null || lines.Length != 1)
-            {
-                Console.WriteLine("Expected single line with secret salt in in .passgen/salt");
-                return null;
-            }
+                throw new PassGenArgsParseException($"Expected single line with secret salt in file {SaltFilePathForHelp}");
 
-            return lines[0];
+            var salt = lines[0];
+            if (string.IsNullOrEmpty(salt))
+                throw new PassGenArgsParseException($"Secret salt in file {SaltFilePathForHelp} should not be empty");
+            
+            return salt;
         }
     }
 }
