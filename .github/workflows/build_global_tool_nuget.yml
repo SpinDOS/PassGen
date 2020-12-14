@@ -1,27 +1,23 @@
 name: Build and upload nupkg
 
-on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+on: workflow_dispatch
 
 jobs:
-  build:
-
+  build_and_upload:
+    name: Build and upload .nupkg
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
+        dotnet-version: "5.0"
         source-url: https://nuget.pkg.github.com/SpinDOS/index.json
       env:
         NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
     - name: Install dependencies
-      run: dotnet restore
+      run: dotnet restore PassGen.GlobalTool
     - name: Pack nupkg
-      run: dotnet pack --configuration Release --no-restore --output ./out
+      run: dotnet pack PassGen.GlobalTool --configuration Release --no-restore --output ./out
     - name: Upload nupkg to GitHub
       run: dotnet nuget push "./out/*.nupkg" --skip-duplicate --no-symbols true

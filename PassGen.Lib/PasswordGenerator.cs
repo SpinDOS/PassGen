@@ -1,3 +1,4 @@
+using System;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -7,6 +8,9 @@ namespace PassGen.Lib
     {
         public string GeneratePassword(string target, string salt)
         {
+            target = target ?? throw new ArgumentNullException(nameof(target));
+            salt = salt ?? throw new ArgumentNullException(nameof(salt));
+            
             var stringToHash = $"{target}@{salt}";
             var generatedPassword = CalculateSha512Hash(stringToHash);
 

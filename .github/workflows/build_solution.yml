@@ -1,0 +1,75 @@
+name: Build whole solution
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  lib:
+    name: Build PassGen.Lib
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: "5.0"
+    - name: Build project
+      run: dotnet build PassGen.Lib
+  global_tool:
+    name: Build PassGen.GlobalTool
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: "5.0"
+    - name: Build project
+      run: dotnet build PassGen.GlobalTool
+  tests:
+    name: Build PassGen.Tests
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: "5.0"
+    - name: Build project
+      run: dotnet build PassGen.Tests
+  xamarin:
+    name: Build PassGen.Xamarin
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: "5.0"
+    - name: Build project
+      run: dotnet build PassGen.Xamarin/PassGen.Xamarin
+  xamarin_android:
+    name: Build PassGen.Xamarin.Android
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+            java-version: "15.0.1"
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v2
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.0.2
+      - name: Build project
+        run: msbuild /r:True /t:Rebuild /p:AndroidSdkDirectory=/android/sdk PassGen.Xamarin/PassGen.Xamarin.Android/PassGen.Xamarin.Android.csproj
+  xamarin_ios:
+    name: Build PassGen.Xamarin.iOS
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build project
+        run: msbuild /r:True /t:Rebuild PassGen.Xamarin/PassGen.Xamarin.iOS/PassGen.Xamarin.iOS.csproj

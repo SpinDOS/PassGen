@@ -4,7 +4,7 @@
         <PackAsTool>true</PackAsTool>
         <ToolCommandName>passgen</ToolCommandName>
         <OutputType>Exe</OutputType>
-        <TargetFramework>netcoreapp2.2</TargetFramework>
+        <TargetFramework>netcoreapp2.1</TargetFramework>
     </PropertyGroup>
 
     <PropertyGroup>

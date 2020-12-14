@@ -1,0 +1,25 @@
+name: Build Xamarin.Android APK file
+
+on: workflow_dispatch
+
+jobs:
+  build_and_upload:
+    name: Build and upload APK
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+            java-version: "15.0.1"
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v2
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.0.2
+      - name: Generate Xamarin Android APK
+        run: msbuild /r:True /t:SignAndroidPackage /p:Configuration=Release /p:AndroidSdkDirectory=/android/sdk /p:OutDir=out PassGen.Xamarin/PassGen.Xamarin.Android/PassGen.Xamarin.Android.csproj
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: com.alexanderplat.PassGen.Xamarin-Signed.apk
+          path: PassGen.Xamarin/PassGen.Xamarin.Android/out/com.alexanderplat.PassGen.Xamarin-Signed.apk
