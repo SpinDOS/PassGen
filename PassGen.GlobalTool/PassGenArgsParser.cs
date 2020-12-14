@@ -97,15 +97,24 @@ namespace PassGen.GlobalTool
             if (!File.Exists(saltFilePath))
                 return null;
 
+            string[] lines;
             try
             {
-                return File.ReadAllText(saltFilePath);
+                lines = File.ReadAllLines(saltFilePath);
             }
             catch (Exception e) when (e is IOException || e is UnauthorizedAccessException)
             {
                 Console.WriteLine("Could not access salt file in .passgen directory");
                 return null;
             }
+
+            if (lines == null || lines.Length != 1)
+            {
+                Console.WriteLine("Expected single line with secret salt in in .passgen/salt");
+                return null;
+            }
+
+            return lines[0];
         }
     }
 }
