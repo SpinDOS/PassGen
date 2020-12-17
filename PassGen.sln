@@ -12,6 +12,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassGen.Xamarin.iOS", "Pass
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassGen.Tests", "PassGen.Tests\PassGen.Tests.csproj", "{EF0E2EEC-BDD5-4E8C-9336-F9DDDFB3BACD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassGen.Web", "PassGen.Web\PassGen.Web.csproj", "{F72CD0A0-D5BB-45DF-A8C1-A9D7A563F03B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,5 +44,9 @@ Global
 		{EF0E2EEC-BDD5-4E8C-9336-F9DDDFB3BACD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF0E2EEC-BDD5-4E8C-9336-F9DDDFB3BACD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EF0E2EEC-BDD5-4E8C-9336-F9DDDFB3BACD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F72CD0A0-D5BB-45DF-A8C1-A9D7A563F03B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F72CD0A0-D5BB-45DF-A8C1-A9D7A563F03B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F72CD0A0-D5BB-45DF-A8C1-A9D7A563F03B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F72CD0A0-D5BB-45DF-A8C1-A9D7A563F03B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

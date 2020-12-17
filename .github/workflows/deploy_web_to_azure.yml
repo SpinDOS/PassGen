@@ -1,0 +1,22 @@
+name: Deploy PassGen.Web to Azure
+
+on: workflow_dispatch
+
+jobs:
+  build_and_deploy:
+    name: "Build PassGen.Web and deploy it to Azure"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: "5.0"
+      - name: Build and publish PassGen.Web
+        run: dotnet publish PassGen.Web -c Release -o ./out
+      - name: 'Deploy to Azure'
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: "passgen-alexanderplat"
+          publish-profile: ${{secrets.AZURE_WEBAPP_PUBLISH_PROFILE}}
+          package: ./out

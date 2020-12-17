@@ -73,3 +73,14 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build project
         run: msbuild /r:True /t:Rebuild PassGen.Xamarin/PassGen.Xamarin.iOS/PassGen.Xamarin.iOS.csproj
+  web:
+    name: Build PassGen.Web
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: "5.0"
+    - name: Build project
+      run: dotnet build PassGen.Web
