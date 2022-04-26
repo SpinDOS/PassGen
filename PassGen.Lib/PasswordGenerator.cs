@@ -10,28 +10,28 @@ namespace PassGen.Lib
         {
             target = target ?? throw new ArgumentNullException(nameof(target));
             salt = salt ?? throw new ArgumentNullException(nameof(salt));
-            
+
             var stringToHash = $"{target}@{salt}";
             var generatedPassword = CalculateSha512Hash(stringToHash);
 
             TakeFirst8Chars(generatedPassword);
             EnrichWithNecessaryCharTypes(generatedPassword);
-            
+
             return generatedPassword.ToString();
         }
 
         private StringBuilder CalculateSha512Hash(string stringToHash)
         {
-            var bytesToHash = Encoding.ASCII.GetBytes(stringToHash);
-            
+            var bytesToHash = Encoding.UTF8.GetBytes(stringToHash);
+
             byte[] hashBytes;
             using (var sha512 = SHA512.Create())
                 hashBytes = sha512.ComputeHash(bytesToHash);
-            
+
             var hashString = new StringBuilder(128);
             foreach (var hashByte in hashBytes)
                 hashString.AppendFormat("{0:x2}", hashByte);
-            
+
             return hashString;
         }
 
