@@ -4,12 +4,12 @@
         <PackAsTool>true</PackAsTool>
         <ToolCommandName>passgen</ToolCommandName>
         <OutputType>Exe</OutputType>
-        <TargetFramework>netcoreapp2.1</TargetFramework>
+        <TargetFramework>net7.0</TargetFramework>
     </PropertyGroup>
 
     <PropertyGroup>
         <PackageId>passgen</PackageId>
-        <Version>1.2.0</Version>
+        <Version>1.2.1</Version>
         <Authors>SpinDOS</Authors>
         <RepositoryUrl>https://github.com/SpinDOS/PassGen</RepositoryUrl>
     </PropertyGroup>

@@ -11,7 +11,7 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: "5.0"
+        dotnet-version: "7.0"
         source-url: https://nuget.pkg.github.com/SpinDOS/index.json
       env:
         NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
@@ -20,4 +20,6 @@ jobs:
     - name: Pack nupkg
       run: dotnet pack PassGen.GlobalTool --configuration Release --no-restore --output ./out
     - name: Upload nupkg to GitHub
-      run: dotnet nuget push "./out/*.nupkg" --skip-duplicate --no-symbols true
+      run: dotnet nuget push "./out/*.nupkg" --api-key ${NUGET_AUTH_TOKEN} --skip-duplicate --no-symbols
+      env:
+        NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}

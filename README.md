@@ -13,7 +13,7 @@ Usage: `passgen <website> [master-pass]`
 
 master-pass can be provided with command line argument, environment variable PG_SALT or stored in text file under your home directory.
 
-You can download nuget package from [GitHub packages](https://github.com/SpinDOS/PassGen/packages) and install it as dotnet global tool with the following command: `dotnet tool install passgen --global --add-source "path/to/directory/containing/passgen.1.2.0.nupkg"`
+You can download nuget package from [GitHub packages](https://github.com/SpinDOS/PassGen/packages) and install it as dotnet global tool with the following command: `dotnet tool install passgen --global --add-source "path/to/directory/containing/passgen.1.2.1.nupkg"`
 
 <details>
 <summary>Example of password generating</summary>
