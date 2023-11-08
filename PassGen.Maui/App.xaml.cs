@@ -10,12 +10,12 @@ public partial class App : Application
             
 		DependencyService.Register<ISaltStorage, SaltStorage>();
 		DependencyService.Register<IPasswordGenerator, PasswordGeneratorAdapter>();
+		DependencyService.Register<IToastNotifier, ToastNotifier>();
 
 		MainPage = new MainPage(
 			DependencyService.Resolve<ISaltStorage>(DependencyFetchTarget.NewInstance),
 			DependencyService.Resolve<IPasswordGenerator>(DependencyFetchTarget.NewInstance),
-			DependencyService.Resolve<IToastNotifier>(DependencyFetchTarget.NewInstance));
-
-		// MainPage = new AppShell();
+			DependencyService.Resolve<IToastNotifier>(DependencyFetchTarget.NewInstance)
+		);
 	}
 }

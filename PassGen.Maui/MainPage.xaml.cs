@@ -78,7 +78,7 @@ public partial class MainPage : ContentPage
             async () =>
             {
                 await Clipboard.SetTextAsync(viewModel.GeneratedPassword);
-                toastNotifier.ShowToast("Successfully copied generated password to clipboard");
+                await toastNotifier.ShowToast("Successfully copied generated password to clipboard");
             },
             () => !string.IsNullOrEmpty(viewModel.GeneratedPassword));
         viewModel.PropertyChanged += (sender, args) =>

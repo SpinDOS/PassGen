@@ -13,16 +13,16 @@ public class MainPageViewModel : INotifyPropertyChanged
     private string _salt;
     private string _generatedPassword;
 
-    private readonly global::Microsoft.Maui.Controls.Command _saveSaltCommand;
-    private readonly global::Microsoft.Maui.Controls.Command _clearSaltCommand;
-    private readonly global::Microsoft.Maui.Controls.Command _generatePasswordCommand;
+    private readonly Command _saveSaltCommand;
+    private readonly Command _clearSaltCommand;
+    private readonly Command _generatePasswordCommand;
     
     [Obsolete("Should be used only in generated code by XAML", true)]
     public MainPageViewModel() { }
 
     public MainPageViewModel(ISaltStorage saltStorage, IPasswordGenerator passwordGenerator)
     {
-        _saveSaltCommand = new global::Microsoft.Maui.Controls.Command(
+        _saveSaltCommand = new Command(
             execute: async() =>
             {
                 var salt = Salt;
@@ -31,7 +31,7 @@ public class MainPageViewModel : INotifyPropertyChanged
             }, 
             canExecute: () => !string.IsNullOrEmpty(Salt));
         
-        _clearSaltCommand = new global::Microsoft.Maui.Controls.Command(
+        _clearSaltCommand = new Command(
             execute: async() =>
             {
                 await saltStorage.ClearSalt();
@@ -39,7 +39,7 @@ public class MainPageViewModel : INotifyPropertyChanged
             },
             canExecute: () => !string.IsNullOrEmpty(SavedSalt));
         
-        _generatePasswordCommand = new global::Microsoft.Maui.Controls.Command(
+        _generatePasswordCommand = new Command(
             execute: () => GeneratedPassword = passwordGenerator.GeneratePassword(TargetSite, Salt),
             canExecute: () => !string.IsNullOrEmpty(TargetSite) && !string.IsNullOrEmpty(Salt));
     }
