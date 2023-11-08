@@ -2,7 +2,7 @@ using System;
 using Microsoft.Maui;
 using Microsoft.Maui.Hosting;
 
-namespace Passgen.Maui;
+namespace PassGen.Maui;
 
 class Program : MauiApplication
 {

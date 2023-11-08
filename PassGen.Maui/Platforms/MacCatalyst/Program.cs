@@ -1,7 +1,7 @@
 ﻿using ObjCRuntime;
 using UIKit;
 
-namespace Passgen.Maui;
+namespace PassGen.Maui;
 
 public class Program
 {

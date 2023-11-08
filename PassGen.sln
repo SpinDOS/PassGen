@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassGen.Tests", "PassGen.Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassGen.Web", "PassGen.Web\PassGen.Web.csproj", "{F72CD0A0-D5BB-45DF-A8C1-A9D7A563F03B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Passgen.Maui", "PassGen.Maui\Passgen.Maui.csproj", "{68B1C9EC-D2F1-442B-ABF5-45015EB0679B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassGen.Maui", "PassGen.Maui\Passgen.Maui.csproj", "{68B1C9EC-D2F1-442B-ABF5-45015EB0679B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

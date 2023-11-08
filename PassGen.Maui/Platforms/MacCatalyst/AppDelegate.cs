@@ -1,6 +1,6 @@
 ﻿using Foundation;
 
-namespace Passgen.Maui;
+namespace PassGen.Maui;
 
 [Register("AppDelegate")]
 public class AppDelegate : MauiUIApplicationDelegate
