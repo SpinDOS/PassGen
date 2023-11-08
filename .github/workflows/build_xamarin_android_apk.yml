@@ -16,10 +16,10 @@ jobs:
         uses: android-actions/setup-android@v2
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.0.2
-      - name: Generate Xamarin Android APK
-        run: msbuild /r:True /t:SignAndroidPackage /p:Configuration=Release /p:AndroidSdkDirectory=/android/sdk /p:OutDir=out PassGen.Xamarin/PassGen.Xamarin.Android/PassGen.Xamarin.Android.csproj
+      - name: Generate Maui Android APK
+        run: msbuild /r:True /t:SignAndroidPackage /p:Configuration=Release /p:AndroidSdkDirectory=/android/sdk /p:OutDir=out PassGen.MauiPassGen.Maui.Android.csproj
       - name: Upload Artifacts
         uses: actions/upload-artifact@v1
         with:
-          name: com.alexanderplat.PassGen.Xamarin-Signed.apk
-          path: PassGen.Xamarin/PassGen.Xamarin.Android/out/com.alexanderplat.PassGen.Xamarin-Signed.apk
+          name: com.alexanderplat.PassGen.Maui-Signed.apk
+          path: PassGen.Maui/PassGen.Maui.Android/out/com.alexanderplat.PassGen.Maui-Signed.apk
