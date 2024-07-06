@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using AdysTech.CredentialManager;
 
 namespace PassGen.GlobalTool
 {
@@ -13,26 +14,10 @@ namespace PassGen.GlobalTool
     
     public sealed class PassGenArgsParser
     {
-        public static readonly string SaltEnvironmentVariableName = "PG_SALT";
+        public static readonly string PgSalt = "PG_SALT";
         
-        private static readonly string SetSaltEnvVariableCommand, SaltFilePathForHelp;
-
         private bool _parsed;
         private PassGenArgs _passGenArgs;
-
-        static PassGenArgsParser()
-        {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                SetSaltEnvVariableCommand = $"set {SaltEnvironmentVariableName}=...";
-                SaltFilePathForHelp = Path.Combine("%userprofile%", ".passgen", "salt");
-            }
-            else
-            {
-                SetSaltEnvVariableCommand = $"export {SaltEnvironmentVariableName}='...'";
-                SaltFilePathForHelp = Path.Combine("~", ".passgen", "salt");
-            }
-        }
 
         public PassGenArgs GetParsedArgs()
         {
@@ -71,8 +56,11 @@ namespace PassGen.GlobalTool
         {
             Console.WriteLine("Salt must be provided with one of the following ways: ");
             Console.WriteLine("1. Command line arguments: dotnet passgen.dll <target> [salt]");
-            Console.WriteLine("2. Environment variable: " + SetSaltEnvVariableCommand);
-            Console.WriteLine("3. Contents of passgen salt file in your home directory: " + SaltFilePathForHelp);
+            Console.WriteLine($"2. Environment variable '{PgSalt}'");
+            if (IsOsWindows())
+                Console.WriteLine($"3. Windows CredentialManager's generic credential '{PgSalt}'");
+            else if (IsOsUnix())
+                Console.WriteLine("3. Contents of passgen salt file in your home directory: ~/.passgen/salt");
         }
 
         private bool AreValidArgs(string[] args) => 
@@ -84,7 +72,8 @@ namespace PassGen.GlobalTool
             {
                 salt = TryExtractSaltFromArgs(args) ??
                        TryExtractSaltFromEnvironment() ??
-                       TryExtractSaltFromHomeDirectory();
+                       TryExtractSaltFromWindowsCredentialManager() ??
+                       TryExtractSaltFromUnixHomeDirectory();
             }
             catch (PassGenArgsParseException e)
             {
@@ -109,14 +98,28 @@ namespace PassGen.GlobalTool
 
         private string TryExtractSaltFromEnvironment()
         {
-            var salt = Environment.GetEnvironmentVariable(SaltEnvironmentVariableName);
+            var salt = Environment.GetEnvironmentVariable(PgSalt);
             if (salt == string.Empty)
-                throw new PassGenArgsParseException($"{SaltEnvironmentVariableName} environment variable should not contain empty salt");
+                throw new PassGenArgsParseException($"{PgSalt} environment variable should not contain empty salt");
             return salt;
         }
 
-        private string TryExtractSaltFromHomeDirectory()
+        private string TryExtractSaltFromWindowsCredentialManager() {
+            if (!IsOsWindows())
+                return null;
+            var credential = CredentialManager.GetCredentials(PgSalt);
+            if (credential == null) 
+                return null;
+            if (string.IsNullOrEmpty(credential.Password))
+                throw new PassGenArgsParseException($"Credential {PgSalt} password should not be empty");
+            return credential.Password;
+        }
+
+        private string TryExtractSaltFromUnixHomeDirectory()
         {
+            if (!IsOsUnix())
+                return null;
+
             var saltFilePath = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
                 ".passgen",
@@ -133,17 +136,20 @@ namespace PassGen.GlobalTool
             }
             catch (Exception e) when (e is IOException || e is UnauthorizedAccessException)
             {
-                throw new PassGenArgsParseException($"Could not access secret salt file {SaltFilePathForHelp}", e);
+                throw new PassGenArgsParseException($"Could not access secret salt file {saltFilePath}", e);
             }
 
             if (lines == null || lines.Length != 1)
-                throw new PassGenArgsParseException($"Expected single line with secret salt in file {SaltFilePathForHelp}");
+                throw new PassGenArgsParseException($"Expected single line with secret salt in file {saltFilePath}");
 
             var salt = lines[0];
             if (string.IsNullOrEmpty(salt))
-                throw new PassGenArgsParseException($"Secret salt in file {SaltFilePathForHelp} should not be empty");
+                throw new PassGenArgsParseException($"Secret salt in file {saltFilePath} should not be empty");
             
             return salt;
         }
+
+        private static bool IsOsWindows() => RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+        private static bool IsOsUnix() => RuntimeInformation.IsOSPlatform(OSPlatform.Linux) | RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
     }
 }
