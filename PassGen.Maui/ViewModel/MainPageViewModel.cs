@@ -12,15 +12,15 @@ public class MainPageViewModel : INotifyPropertyChanged
     private string _salt;
     private string _generatedPassword;
 
+    private readonly ISaltStorage saltStorage_;
     private readonly Command _saveSaltCommand;
     private readonly Command _clearSaltCommand;
+    private readonly Command _invertUseSavedSaltCommand;
     private readonly Command _generatePasswordCommand;
-    
-    [Obsolete("Should be used only in generated code by XAML", true)]
-    public MainPageViewModel() { }
 
     public MainPageViewModel(ISaltStorage saltStorage, IPasswordGenerator passwordGenerator)
     {
+        saltStorage_ = saltStorage;
         _saveSaltCommand = new Command(
             execute: async() =>
             {
@@ -37,14 +37,25 @@ public class MainPageViewModel : INotifyPropertyChanged
                 Salt = SavedSalt = null;
             },
             canExecute: () => !string.IsNullOrEmpty(SavedSalt));
+
+        _invertUseSavedSaltCommand = new Command(
+            execute: () => UseSavedSalt = !UseSavedSalt,
+            canExecute: () => !string.IsNullOrEmpty(SavedSalt)
+        );
         
         _generatePasswordCommand = new Command(
             execute: () => GeneratedPassword = passwordGenerator.GeneratePassword(TargetSite, Salt),
             canExecute: () => !string.IsNullOrEmpty(TargetSite) && !string.IsNullOrEmpty(Salt));
     }
 
+    public async Task LoadDataAsync() {
+        Salt = SavedSalt = await saltStorage_.GetSalt();
+        UseSavedSalt = !string.IsNullOrEmpty(Salt);
+    }
+
     public ICommand SaveSaltCommand => _saveSaltCommand;
     public ICommand ClearSaltCommand => _clearSaltCommand;
+    public ICommand InvertUseSavedSaltCommand => _invertUseSavedSaltCommand;
     public ICommand GeneratePasswordCommand => _generatePasswordCommand;
 
     public string TargetSite
@@ -80,7 +91,10 @@ public class MainPageViewModel : INotifyPropertyChanged
             if (string.IsNullOrEmpty(value))
                 UseSavedSalt = false;
             if (string.IsNullOrEmpty(oldValue) != string.IsNullOrEmpty(value))
+            {
                 _clearSaltCommand.ChangeCanExecute();
+                _invertUseSavedSaltCommand.ChangeCanExecute();
+            }
         }
     }
 

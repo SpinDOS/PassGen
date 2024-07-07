@@ -18,8 +18,8 @@ public static class MauiProgram
 			});
 
 		builder.Services.AddTransient<MainPage>(_ => new MainPage(
-			new SaltStorage(), new PasswordGeneratorAdapter())
-		);
+			new MainPageViewModel(new SaltStorage(), new PasswordGeneratorAdapter())
+		));
 
 #if DEBUG
 		builder.Logging.AddDebug();

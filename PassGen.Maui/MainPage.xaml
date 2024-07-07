@@ -2,10 +2,8 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:PassGen.Maui"
-             x:Class="PassGen.Maui.MainPage">
-    <ContentPage.BindingContext>
-        <local:MainPageViewModel/>
-    </ContentPage.BindingContext>
+             x:Class="PassGen.Maui.MainPage"
+             Appearing="OnAppearing">
     <ContentPage.Resources>
         <local:StringNotEmptyConverter x:Key="StringNotEmptyConverter"/>
         <local:DoubleWithFactorToThicknessConverter x:Key="AThirdOfHeightMarginConverter" ThicknessFactor="0, 0.33"/>
@@ -50,9 +48,7 @@
                            VerticalOptions="Center"
                            VerticalTextAlignment="Center">
                         <Label.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding 
-                                Source={RelativeSource AncestorType={x:Type local:MainPage}}, 
-                                Path=ChangeUseSavedSaltCommand}"/>
+                            <TapGestureRecognizer Command="{Binding InvertUseSavedSaltCommand}"/>
                         </Label.GestureRecognizers>
                     </Label>
                 </StackLayout>
@@ -77,9 +73,16 @@
                         </Grid>
                     </StackLayout>
                 </Grid>
-                <Button Text="Generate password"
-                        Margin="0, 5"
-                        Command="{Binding GeneratePasswordCommand}"/>
+                <Grid Margin="0, 5">
+                    <Button/>
+                    <Button x:Name="_btnGeneratePasswordGreenColor" BackgroundColor="Green" Opacity="0"/>
+                    <Button 
+                        Text="Generate password"
+                        BackgroundColor="Transparent" 
+                        Command="{Binding 
+                            Source={RelativeSource AncestorType={x:Type local:MainPage}}, 
+                            Path=ClickGeneratePasswordCommand}"/>
+                </Grid>
                 <Grid x:Name="_generatedPasswordGroup" IsClippedToBounds="True" HeightRequest="0">
                     <StackLayout Orientation="Vertical">
                         <Label Text="Generated password: " Margin="0, 0, 0, 3"/>

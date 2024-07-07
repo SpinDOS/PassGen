@@ -1,55 +1,47 @@
 ﻿using System.ComponentModel;
-using System.Windows.Input;
 using CommunityToolkit.Maui.Alerts;
-using CommunityToolkit.Maui.Extensions;
 
 namespace PassGen.Maui;
 
 public partial class MainPage : ContentPage
-{
-	private readonly ISaltStorage _saltStorage;
-	private readonly MainPageViewModel _viewModel;
-	
-	public MainPage(ISaltStorage saltStorage, IPasswordGenerator passwordGenerator)
+{	
+	public MainPage(MainPageViewModel viewModel)
 	{
-		_saltStorage = saltStorage;
-		_viewModel = new MainPageViewModel(saltStorage, passwordGenerator);
-		_viewModel.PropertyChanged += OnModelPropertyChanged;
-		ChangeUseSavedSaltCommand = CreateChangeUseSavedSaltCommand(_viewModel);
-		CopyToClipboardCommand = CreateCopyToClipboardCommand(_viewModel);
+		viewModel_ = viewModel;
+		BindingContext = viewModel;
+		CopyToClipboardCommand = CreateCopyToClipboardCommand(viewModel);
+		ClickGeneratePasswordCommand = CreateClickGeneratePasswordCommand(viewModel);
 		InitializeComponent();
-		this.BindingContext = _viewModel;
-		this.Appearing += OnAppearing;
+		viewModel.PropertyChanged += OnModelPropertyChanged;
+		if (viewModel.UseSavedSalt) 
+			_saltGroup.HeightRequest = 0; // collapse group without animation
 	}
 
-	public ICommand ChangeUseSavedSaltCommand { get; }
+	private readonly MainPageViewModel viewModel_;
 
-	public ICommand CopyToClipboardCommand { get; }
-	
-	private async void OnAppearing(object sender, EventArgs args)
-	{
-		var salt = await _saltStorage.GetSalt();
-		var useSavedSalt = !string.IsNullOrEmpty(salt);
-		if (useSavedSalt) 
-			_saltGroup.HeightRequest = 0; // collapse group without animation
-		_viewModel.Salt = _viewModel.SavedSalt = salt;
-		_viewModel.UseSavedSalt = useSavedSalt;
+	public Command CopyToClipboardCommand { get; }
+	public Command ClickGeneratePasswordCommand { get; }
+
+	private async void OnAppearing(object sender, EventArgs e) {
+		await viewModel_.LoadDataAsync();
 	}
 
 	private void OnModelPropertyChanged(object sender, PropertyChangedEventArgs eventArgs)
 	{
+		var viewModel = (MainPageViewModel)sender;
 		switch (eventArgs.PropertyName)
 		{
-		case nameof(_viewModel.UseSavedSalt):
+		case nameof(viewModel.UseSavedSalt):
 			AnimateVerticalExpand(
-				"SaltGroupExpandAnimation", _saltGroup, !_viewModel.UseSavedSalt, null
+				"SaltGroupExpandAnimation", _saltGroup, !viewModel.UseSavedSalt, null
 			);
 			break;
-		case nameof(_viewModel.GeneratedPassword):
+		case nameof(viewModel.GeneratedPassword):
+			CopyToClipboardCommand.ChangeCanExecute();
 			AnimateVerticalExpand(
 				"GeneratedPasswordExpandAnimation", 
 				_generatedPasswordGroup, 
-				!string.IsNullOrEmpty(_viewModel.GeneratedPassword),
+				!string.IsNullOrEmpty(viewModel.GeneratedPassword),
 				CreateScrollToLastElementCallback(_mainScrollView, _lastElement)
 			);
 			break;
@@ -58,37 +50,31 @@ public partial class MainPage : ContentPage
 		}
 	}
 
-	private static ICommand CreateChangeUseSavedSaltCommand(MainPageViewModel viewModel)
+	private Command CreateCopyToClipboardCommand(MainPageViewModel viewModel)
 	{
-		var command = new Command(
-			() => viewModel.UseSavedSalt = !viewModel.UseSavedSalt,
-			() => !string.IsNullOrEmpty(viewModel.SavedSalt));
-		viewModel.PropertyChanged += (sender, args) =>
-		{
-			if (args.PropertyName == nameof(viewModel.SavedSalt))
-				command.ChangeCanExecute();
-		};
-		return command;
-	}
-
-	private ICommand CreateCopyToClipboardCommand(MainPageViewModel viewModel)
-	{
-		var command = new Command(
-			async () =>
+		return new Command(
+			execute: async () =>
 			{
 				await Clipboard.SetTextAsync(viewModel.GeneratedPassword);
-				var greenColorAnimationTask = AnimateCopyToClipboardGreenColor();
+				var greenColorAnimationTask = AnimateCopyToClipboardGreenColor(_btnCopyToClipboardGreenColor);
 				var toastTask = OperatingSystem.IsAndroid()
 					? Toast.Make("Successfully copied generated password to clipboard").Show()
 					: Task.CompletedTask;
 				await Task.WhenAll(greenColorAnimationTask, toastTask);
 			},
-			() => !string.IsNullOrEmpty(viewModel.GeneratedPassword));
-		viewModel.PropertyChanged += (sender, args) =>
-		{
-			if (args.PropertyName == nameof(viewModel.GeneratedPassword))
-				command.ChangeCanExecute();
-		};
+			canExecute: () => !string.IsNullOrEmpty(viewModel.GeneratedPassword));
+	}
+
+	private Command CreateClickGeneratePasswordCommand(MainPageViewModel viewModel) {
+		var modelCommand = viewModel.GeneratePasswordCommand;
+		var command = new Command(
+			execute: async () => {
+				modelCommand.Execute(null);
+				await AnimateCopyToClipboardGreenColor(_btnGeneratePasswordGreenColor);
+			},
+			canExecute: () => modelCommand.CanExecute(null)
+		);
+		modelCommand.CanExecuteChanged += (sender, args) => command.ChangeCanExecute();
 		return command;
 	}
 
@@ -131,11 +117,11 @@ public partial class MainPage : ContentPage
 		};
 	}
 
-	private async Task AnimateCopyToClipboardGreenColor() {
-		if (_btnCopyToClipboardGreenColor == null)
+	private static async Task AnimateCopyToClipboardGreenColor(VisualElement element) {
+		if (element == null)
 			return;
-		_btnCopyToClipboardGreenColor.CancelAnimations();
-		_btnCopyToClipboardGreenColor.Opacity = 1;
-		await _btnCopyToClipboardGreenColor.FadeTo(0, 2000, Easing.CubicInOut);
+		element.CancelAnimations();
+		element.Opacity = 1;
+		await element.FadeTo(0, 2000, Easing.CubicInOut);
 	}
 }
