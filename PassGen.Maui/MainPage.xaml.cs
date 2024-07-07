@@ -15,7 +15,6 @@ public partial class MainPage : ContentPage
 		_viewModel.PropertyChanged += OnModelPropertyChanged;
 		ChangeUseSavedSaltCommand = CreateChangeUseSavedSaltCommand(_viewModel);
 		CopyToClipboardCommand = CreateCopyToClipboardCommand(_viewModel, toastNotifier);
-		
 		InitializeComponent();
 		this.BindingContext = _viewModel;
 		this.Appearing += OnAppearing;
@@ -28,8 +27,11 @@ public partial class MainPage : ContentPage
 	private async void OnAppearing(object sender, EventArgs args)
 	{
 		var salt = await _saltStorage.GetSalt();
+		var useSavedSalt = !string.IsNullOrEmpty(salt);
+		if (useSavedSalt) 
+			_saltGroup.HeightRequest = 0; // collapse group without animation
 		_viewModel.Salt = _viewModel.SavedSalt = salt;
-		_viewModel.UseSavedSalt = !string.IsNullOrEmpty(salt);
+		_viewModel.UseSavedSalt = useSavedSalt;
 	}
 
 	private void OnModelPropertyChanged(object sender, PropertyChangedEventArgs eventArgs)

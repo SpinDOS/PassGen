@@ -20,9 +20,4 @@ namespace PassGen.Maui
             set => SetValue(PlaceholderProperty, value);
         }
     }
-
-    namespace ShowHidePasswordEntryPrivate
-    {
-        public sealed class PassEntry : Entry { }
-    }
 }
