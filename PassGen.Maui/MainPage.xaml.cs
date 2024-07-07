@@ -37,18 +37,16 @@ public partial class MainPage : ContentPage
 		switch (eventArgs.PropertyName)
 		{
 		case nameof(_viewModel.UseSavedSalt):
-			_saltGroup.Animate(
-				"SaltGroupSlidingAnimation",
-				CreateLayoutScaleYAnimationCallback(_saltGroup),
-				_saltGroup.LayoutScaleY,
-				_viewModel.UseSavedSalt? 0.0 : 1.0);
+			AnimateVerticalExpand(
+				"SaltGroupExpandAnimation", _saltGroup, !_viewModel.UseSavedSalt, null
+			);
 			break;
 		case nameof(_viewModel.GeneratedPassword):
-			_generatedPasswordGroup.Animate("GeneratedPasswordAppearingAnimation",
-				CreateLayoutScaleYAnimationCallback(_generatedPasswordGroup),
-				_generatedPasswordGroup.LayoutScaleY,
-				string.IsNullOrEmpty(_viewModel.GeneratedPassword) ? 0.0 : 1.0,
-				finished: CreateScrollToLastElementCallback(_mainScrollView, _lastElement)
+			AnimateVerticalExpand(
+				"GeneratedPasswordExpandAnimation", 
+				_generatedPasswordGroup, 
+				!string.IsNullOrEmpty(_viewModel.GeneratedPassword),
+				CreateScrollToLastElementCallback(_mainScrollView, _lastElement)
 			);
 			break;
 		default:
@@ -86,13 +84,27 @@ public partial class MainPage : ContentPage
 		return command;
 	}
 
-	private static Action<double> CreateLayoutScaleYAnimationCallback(StackPanelWithLayoutScale panel)
+	private static void AnimateVerticalExpand(string animationName, Grid wrapperGrid, bool targetStateIsExpanded, Action<double, bool> finished) {
+		var actualHeight = wrapperGrid.Height;
+		var desiredHeight = targetStateIsExpanded
+			? wrapperGrid.Children.Single().Measure(double.PositiveInfinity, double.PositiveInfinity).Height
+			: 0.0;
+		wrapperGrid.CancelAnimations();
+		wrapperGrid.Animate(animationName,
+			CreateExpandAnimationCallback(wrapperGrid),
+			actualHeight,
+			desiredHeight,
+			finished: finished
+		);
+	}
+
+	private static Action<double> CreateExpandAnimationCallback(Grid grid)
 	{
-		var weakReferencePanel = new WeakReference<StackPanelWithLayoutScale>(panel);
+		var weakReferenceGrid = new WeakReference<Grid>(grid);
 		return it =>
 		{
-			if (weakReferencePanel.TryGetTarget(out var strongReferencePanel))
-				strongReferencePanel.LayoutScaleY = it;
+			if (weakReferenceGrid.TryGetTarget(out var strongReferenceGrid))
+				strongReferenceGrid.HeightRequest = it;
 		};
 	}
 
@@ -100,9 +112,10 @@ public partial class MainPage : ContentPage
 	{
 		var weakReferenceScrollView = new WeakReference<ScrollView>(scrollView);
 		var weakReferenceElem = new WeakReference<Element>(lastElement);
-		return async (d, cancelled) =>
+		return async (d, canceled) =>
 		{
-			if (weakReferenceScrollView.TryGetTarget(out var strongReferenceScrollView) &&
+			if (!canceled && 
+				weakReferenceScrollView.TryGetTarget(out var strongReferenceScrollView) &&
 				weakReferenceElem.TryGetTarget(out var strongReferenceElem))
 			{
 				await strongReferenceScrollView.ScrollToAsync(strongReferenceElem, ScrollToPosition.MakeVisible, true);
