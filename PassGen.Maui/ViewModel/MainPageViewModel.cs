@@ -90,6 +90,7 @@ public class MainPageViewModel : INotifyPropertyChanged
             
             if (string.IsNullOrEmpty(value))
                 UseSavedSalt = false;
+                
             if (string.IsNullOrEmpty(oldValue) != string.IsNullOrEmpty(value))
             {
                 _clearSaltCommand.ChangeCanExecute();

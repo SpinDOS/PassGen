@@ -10,7 +10,6 @@ public partial class MainPage : ContentPage
 		viewModel_ = viewModel;
 		BindingContext = viewModel;
 		CopyToClipboardCommand = CreateCopyToClipboardCommand(viewModel);
-		ClickGeneratePasswordCommand = CreateClickGeneratePasswordCommand(viewModel);
 		InitializeComponent();
 		viewModel.PropertyChanged += OnModelPropertyChanged;
 		if (viewModel.UseSavedSalt) 
@@ -20,7 +19,6 @@ public partial class MainPage : ContentPage
 	private readonly MainPageViewModel viewModel_;
 
 	public Command CopyToClipboardCommand { get; }
-	public Command ClickGeneratePasswordCommand { get; }
 
 	private async void OnAppearing(object sender, EventArgs e) {
 		await viewModel_.LoadDataAsync();
@@ -56,26 +54,10 @@ public partial class MainPage : ContentPage
 			execute: async () =>
 			{
 				await Clipboard.SetTextAsync(viewModel.GeneratedPassword);
-				var greenColorAnimationTask = AnimateCopyToClipboardGreenColor(_btnCopyToClipboardGreenColor);
-				var toastTask = OperatingSystem.IsAndroid()
-					? Toast.Make("Successfully copied generated password to clipboard").Show()
-					: Task.CompletedTask;
-				await Task.WhenAll(greenColorAnimationTask, toastTask);
+				if (OperatingSystem.IsAndroid())
+					await Toast.Make("Successfully copied generated password to clipboard").Show();
 			},
 			canExecute: () => !string.IsNullOrEmpty(viewModel.GeneratedPassword));
-	}
-
-	private Command CreateClickGeneratePasswordCommand(MainPageViewModel viewModel) {
-		var modelCommand = viewModel.GeneratePasswordCommand;
-		var command = new Command(
-			execute: async () => {
-				modelCommand.Execute(null);
-				await AnimateCopyToClipboardGreenColor(_btnGeneratePasswordGreenColor);
-			},
-			canExecute: () => modelCommand.CanExecute(null)
-		);
-		modelCommand.CanExecuteChanged += (sender, args) => command.ChangeCanExecute();
-		return command;
 	}
 
 	private static void AnimateVerticalExpand(string animationName, Grid wrapperGrid, bool targetStateIsExpanded, Action<double, bool> finished) {
@@ -115,13 +97,5 @@ public partial class MainPage : ContentPage
 				await strongReferenceScrollView.ScrollToAsync(strongReferenceElem, ScrollToPosition.MakeVisible, true);
 			}
 		};
-	}
-
-	private static async Task AnimateCopyToClipboardGreenColor(VisualElement element) {
-		if (element == null)
-			return;
-		element.CancelAnimations();
-		element.Opacity = 1;
-		await element.FadeTo(0, 2000, Easing.CubicInOut);
 	}
 }

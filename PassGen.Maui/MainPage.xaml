@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:PassGen.Maui"
              x:Class="PassGen.Maui.MainPage"
+             x:Name="_mainPage"
              Appearing="OnAppearing">
     <ContentPage.Resources>
         <local:StringNotEmptyConverter x:Key="StringNotEmptyConverter"/>
@@ -65,7 +66,7 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <Button Grid.Column="0"
+                            <local:ButtonWithGreenClick Grid.Column="0"
                                     Text="Save salt"
                                     Margin="0, 5, 5, 5"
                                     Command="{Binding SaveSaltCommand}"/>
@@ -76,30 +77,14 @@
                         </Grid>
                     </StackLayout>
                 </Grid>
-                <Grid Margin="0, 5">
-                    <Button/>
-                    <Button x:Name="_btnGeneratePasswordGreenColor" BackgroundColor="Green" Opacity="0"/>
-                    <Button 
-                        Text="Generate password"
-                        BackgroundColor="Transparent" 
-                        Command="{Binding 
-                            Source={RelativeSource AncestorType={x:Type local:MainPage}}, 
-                            Path=ClickGeneratePasswordCommand}"/>
-                </Grid>
+                <local:ButtonWithGreenClick Text="Generate password" Margin="0, 5" 
+                    Command="{Binding GeneratePasswordCommand}"/>
                 <Grid x:Name="_generatedPasswordGroup" IsClippedToBounds="True" HeightRequest="0">
                     <StackLayout Orientation="Vertical">
                         <Label Text="Generated password: " Margin="0, 0, 0, 3"/>
                         <local:ShowHidePasswordEntry Text="{Binding GeneratedPassword, Mode=TwoWay}"/>
-                        <Grid Margin="0, 5">
-                            <Button/>
-                            <Button x:Name="_btnCopyToClipboardGreenColor" BackgroundColor="Green" Opacity="0"/>
-                            <Button 
-                                Text="Copy to clipboard" 
-                                BackgroundColor="Transparent" 
-                                Command="{Binding 
-                                    Source={RelativeSource AncestorType={x:Type local:MainPage}}, 
-                                    Path=CopyToClipboardCommand}"/>
-                        </Grid>
+                        <local:ButtonWithGreenClick Text="Copy to clipboard" Margin="0, 5" 
+                            Command="{Binding Source={x:Reference _mainPage}, Path=CopyToClipboardCommand}"/>
                         <Label HeightRequest="0" WidthRequest="0" x:Name="_lastElement"/>
                     </StackLayout>
                 </Grid>
