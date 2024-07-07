@@ -26,7 +26,7 @@ You can download nuget package from [GitHub packages](https://github.com/SpinDOS
 
 ### 2. APK file for installation on Android OS
 
-The *.apk can be found as an artifact of the latest build of [Build Xamarin.Android APK file](https://github.com/SpinDOS/PassGen/actions?query=workflow%3A%22Build+Xamarin.Android+APK+file%22) GitHub Action and installed on your mobile with default package manager.
+The *.apk can be found as an artifact of the latest build of [Build Maui.Android APK file](https://github.com/SpinDOS/PassGen/actions?query=workflow%3A%22Build+Maui.Android+APK+file%22) GitHub Action and installed on your mobile with default package manager.
 
 <details>
 <summary>Example of password generating</summary>
