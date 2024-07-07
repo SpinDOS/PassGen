@@ -83,9 +83,16 @@
                     <StackLayout Orientation="Vertical">
                         <Label Text="Generated password: "/>
                         <local:ShowHidePasswordEntry Text="{Binding GeneratedPassword, Mode=TwoWay}"/>
-                        <Button Text="Copy to clipboard" Margin="0, 5" Command="{Binding 
-                            Source={RelativeSource AncestorType={x:Type local:MainPage}}, 
-                            Path=CopyToClipboardCommand}"/>
+                        <Grid Margin="0, 5">
+                            <Button/>
+                            <Button x:Name="_btnCopyToClipboardGreenColor" BackgroundColor="Green" Opacity="0"/>
+                            <Button 
+                                Text="Copy to clipboard" 
+                                BackgroundColor="Transparent" 
+                                Command="{Binding 
+                                    Source={RelativeSource AncestorType={x:Type local:MainPage}}, 
+                                    Path=CopyToClipboardCommand}"/>
+                        </Grid>
                         <Label HeightRequest="0" WidthRequest="0" x:Name="_lastElement"/>
                     </StackLayout>
                 </Grid>

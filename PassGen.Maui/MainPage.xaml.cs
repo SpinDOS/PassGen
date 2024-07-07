@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Windows.Input;
 using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Extensions;
 
 namespace PassGen.Maui;
 
@@ -70,14 +71,17 @@ public partial class MainPage : ContentPage
 		return command;
 	}
 
-	private static ICommand CreateCopyToClipboardCommand(MainPageViewModel viewModel)
+	private ICommand CreateCopyToClipboardCommand(MainPageViewModel viewModel)
 	{
 		var command = new Command(
 			async () =>
 			{
 				await Clipboard.SetTextAsync(viewModel.GeneratedPassword);
-				if (OperatingSystem.IsAndroid()) 
-					await Toast.Make("Successfully copied generated password to clipboard").Show();
+				var greenColorAnimationTask = AnimateCopyToClipboardGreenColor();
+				var toastTask = OperatingSystem.IsAndroid()
+					? Toast.Make("Successfully copied generated password to clipboard").Show()
+					: Task.CompletedTask;
+				await Task.WhenAll(greenColorAnimationTask, toastTask);
 			},
 			() => !string.IsNullOrEmpty(viewModel.GeneratedPassword));
 		viewModel.PropertyChanged += (sender, args) =>
@@ -125,5 +129,13 @@ public partial class MainPage : ContentPage
 				await strongReferenceScrollView.ScrollToAsync(strongReferenceElem, ScrollToPosition.MakeVisible, true);
 			}
 		};
+	}
+
+	private async Task AnimateCopyToClipboardGreenColor() {
+		if (_btnCopyToClipboardGreenColor == null)
+			return;
+		_btnCopyToClipboardGreenColor.CancelAnimations();
+		_btnCopyToClipboardGreenColor.Opacity = 1;
+		await _btnCopyToClipboardGreenColor.FadeTo(0, 2000, Easing.CubicInOut);
 	}
 }

@@ -9,10 +9,7 @@ public static class MauiProgram
 	{
 		var builder = MauiApp.CreateBuilder();
 		builder
-			.UseMauiCommunityToolkit(options =>
-			{
-				options.SetShouldEnableSnackbarOnWindows(true);
-			})
+			.UseMauiCommunityToolkit()
 			.UseMauiApp<App>()
 			.ConfigureFonts(fonts =>
 			{
