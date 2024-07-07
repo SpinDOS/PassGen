@@ -30,14 +30,17 @@
                        HorizontalOptions="Start"
                        VerticalOptions="Start"
                        Margin="0, 0, 0, 3"/>
-                <Entry Text="{Binding TargetSite, Mode=TwoWay}"
-                       ClearButtonVisibility="WhileEditing"
-                       Placeholder="not-secret-site.com"
-                       IsSpellCheckEnabled="False"
-                       IsTextPredictionEnabled="False"
-                       ReturnCommand="{Binding GeneratePasswordCommand}"
-                       HorizontalOptions="Fill"
-                       Keyboard="Url"/>
+                <Grid>
+                    <!-- strange bug in maui: Clear button does not work if Entry is after Label under StackLayout -->
+                    <Entry Text="{Binding TargetSite, Mode=TwoWay}"
+                        ClearButtonVisibility="WhileEditing"
+                        Placeholder="not-secret-site.com"
+                        IsSpellCheckEnabled="False"
+                        IsTextPredictionEnabled="False"
+                        ReturnCommand="{Binding GeneratePasswordCommand}"
+                        HorizontalOptions="Fill"
+                        Keyboard="Url"/>
+                </Grid>
                 <StackLayout Orientation="Horizontal">
                     <CheckBox IsEnabled="{Binding SavedSalt, Converter={StaticResource StringNotEmptyConverter}}"
                               IsChecked="{Binding UseSavedSalt, Mode=TwoWay}"
