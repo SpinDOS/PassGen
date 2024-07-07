@@ -1,0 +1,97 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:PassGen.Maui"
+             x:Class="PassGen.Maui.MainPage">
+    <ContentPage.BindingContext>
+        <local:MainPageViewModel/>
+    </ContentPage.BindingContext>
+    <ContentPage.Resources>
+        <local:StringNotEmptyConverter x:Key="StringNotEmptyConverter"/>
+        <local:DoubleWithFactorToThicknessConverter x:Key="AThirdOfHeightMarginConverter" ThicknessFactor="0, 0.33"/>
+    </ContentPage.Resources>
+    <ScrollView x:Name="_mainScrollView">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="8*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
+                   Text="PassGen"
+                   HorizontalOptions="CenterAndExpand"
+                   HorizontalTextAlignment="Center"
+                   FontSize="Title"
+                   Margin="{Binding Source={RelativeSource Self}, Path=Height, Converter={StaticResource AThirdOfHeightMarginConverter}}"/>
+            <StackLayout Grid.Row="1" Grid.Column="1">
+                <Label Text="Target site: "
+                       HorizontalOptions="Start"
+                       VerticalOptions="Start"/>
+                <Entry Text="{Binding TargetSite, Mode=TwoWay}"
+                       ClearButtonVisibility="WhileEditing"
+                       Placeholder="not-secret-site.com"
+                       IsSpellCheckEnabled="False"
+                       IsTextPredictionEnabled="False"
+                       ReturnCommand="{Binding GeneratePasswordCommand}"
+                       HorizontalOptions="Fill">
+                    <Entry.Keyboard>
+                        <Keyboard x:FactoryMethod="get_Url"/>
+                    </Entry.Keyboard>
+                </Entry>
+                <StackLayout Orientation="Horizontal">
+                    <CheckBox IsEnabled="{Binding SavedSalt, Converter={StaticResource StringNotEmptyConverter}}"
+                              IsChecked="{Binding UseSavedSalt, Mode=TwoWay}"
+                              VerticalOptions="Center"/>
+                    <Label Text="Use saved salt?"
+                           HorizontalOptions="Start"
+                           HorizontalTextAlignment="Start"
+                           VerticalOptions="Center"
+                           VerticalTextAlignment="Center">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding 
+                                Source={RelativeSource AncestorType={x:Type local:MainPage}}, 
+                                Path=ChangeUseSavedSaltCommand}"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+                </StackLayout>
+                <local:StackPanelWithLayoutScale x:Name="_saltGroup"
+                                                   IsClippedToBounds="True"
+                                                   Orientation="Vertical">
+                    <Label Text="Salt: "/>
+                    <local:ShowHidePasswordEntry Text="{Binding Salt, Mode=TwoWay}"
+                                                   Placeholder="Your secret password"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0"
+                                Text="Save salt"
+                                Command="{Binding SaveSaltCommand}"/>
+                        <Button Grid.Column="1"
+                                Text="Clear salt"
+                                Command="{Binding ClearSaltCommand}"/>
+                    </Grid>
+                </local:StackPanelWithLayoutScale>
+                <Button Text="Generate password"
+                        Command="{Binding GeneratePasswordCommand}"/>
+                <local:StackPanelWithLayoutScale x:Name="_generatedPasswordGroup"
+                                                   IsClippedToBounds="True"
+                                                   Orientation="Vertical"
+                                                   LayoutScaleY="0.0">
+                    <Label Text="Generated password: "/>
+                    <local:ShowHidePasswordEntry Text="{Binding GeneratedPassword, Mode=TwoWay}"/>
+                    <Button Text="Copy to clipboard" Command="{Binding 
+                        Source={RelativeSource AncestorType={x:Type local:MainPage}}, 
+                        Path=CopyToClipboardCommand}"/>
+                    <Label HeightRequest="0" WidthRequest="0" x:Name="_lastElement"/>
+                </local:StackPanelWithLayoutScale>
+            </StackLayout>
+        </Grid>
+    </ScrollView>
+    
+</ContentPage>
