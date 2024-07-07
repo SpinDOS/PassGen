@@ -2,13 +2,12 @@ using System.Globalization;
 
 namespace PassGen.Maui;
 
-public sealed class HiddenBoolToImageSourceConverter : IValueConverter
+public sealed class DoubleWithFactorConverter : IValueConverter
 {
-    public ImageSource ShowImage { get; set;}
-    public ImageSource HideImage { get; set;}
+    public double Factor { get; set; } = 1.0;
 
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) =>
-        (bool)value ? ShowImage : HideImage;
+        (double)value * Factor;
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
         throw new NotSupportedException();
