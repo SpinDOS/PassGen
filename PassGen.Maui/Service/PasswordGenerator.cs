@@ -1,3 +1,5 @@
+using PassGen.Lib;
+
 namespace PassGen.Maui;
 
 public interface IPasswordGenerator
@@ -7,8 +9,8 @@ public interface IPasswordGenerator
 
 public sealed class PasswordGeneratorAdapter : IPasswordGenerator
 {
-    // private readonly PasswordGenerator _passwordGenerator = new PasswordGenerator();
+    private readonly PasswordGenerator _passwordGenerator = new PasswordGenerator();
 
-    public string GeneratePassword(string targetSite, string salt) => "test_for_" + targetSite;
-        // _passwordGenerator.GeneratePassword(targetSite, salt);
+    public string GeneratePassword(string targetSite, string salt) => 
+        _passwordGenerator.GeneratePassword(targetSite, salt);
 }

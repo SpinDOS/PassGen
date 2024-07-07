@@ -31,3 +31,4 @@ public static class MauiProgram
 		return builder.Build();
 	}
 }
+// TODO: platforms, resources, icon, SetShouldEnableSnackbarOnWindows
