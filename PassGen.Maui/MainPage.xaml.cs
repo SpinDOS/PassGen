@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Windows.Input;
+using CommunityToolkit.Maui.Alerts;
 
 namespace PassGen.Maui;
 
@@ -8,13 +9,13 @@ public partial class MainPage : ContentPage
 	private readonly ISaltStorage _saltStorage;
 	private readonly MainPageViewModel _viewModel;
 	
-	public MainPage(ISaltStorage saltStorage, IPasswordGenerator passwordGenerator, IToastNotifier toastNotifier)
+	public MainPage(ISaltStorage saltStorage, IPasswordGenerator passwordGenerator)
 	{
 		_saltStorage = saltStorage;
 		_viewModel = new MainPageViewModel(saltStorage, passwordGenerator);
 		_viewModel.PropertyChanged += OnModelPropertyChanged;
 		ChangeUseSavedSaltCommand = CreateChangeUseSavedSaltCommand(_viewModel);
-		CopyToClipboardCommand = CreateCopyToClipboardCommand(_viewModel, toastNotifier);
+		CopyToClipboardCommand = CreateCopyToClipboardCommand(_viewModel);
 		InitializeComponent();
 		this.BindingContext = _viewModel;
 		this.Appearing += OnAppearing;
@@ -69,13 +70,14 @@ public partial class MainPage : ContentPage
 		return command;
 	}
 
-	private static ICommand CreateCopyToClipboardCommand(MainPageViewModel viewModel, IToastNotifier toastNotifier)
+	private static ICommand CreateCopyToClipboardCommand(MainPageViewModel viewModel)
 	{
 		var command = new Command(
 			async () =>
 			{
 				await Clipboard.SetTextAsync(viewModel.GeneratedPassword);
-				toastNotifier.ShowToast("Successfully copied generated password to clipboard");
+				if (OperatingSystem.IsAndroid()) 
+					await Toast.Make("Successfully copied generated password to clipboard").Show();
 			},
 			() => !string.IsNullOrEmpty(viewModel.GeneratedPassword));
 		viewModel.PropertyChanged += (sender, args) =>
