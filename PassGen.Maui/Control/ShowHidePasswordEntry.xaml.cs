@@ -27,5 +27,5 @@ public partial class ShowHidePasswordEntry : Grid
         set => SetValue(PlaceholderProperty, value);
     }
 
-    private void OnShowHideButtonClicked(object sender, EventArgs args) => Hidden = !Hidden;
+    private void ShowHideButtonClickedEventHandler(object sender, EventArgs args) => Hidden = !Hidden;
 }

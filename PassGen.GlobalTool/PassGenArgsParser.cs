@@ -8,8 +8,8 @@ namespace PassGen.GlobalTool
 {
     public sealed class PassGenArgsParseException : ArgumentException
     {
-        public PassGenArgsParseException(string message) : base(message) { }
-        public PassGenArgsParseException(string message, Exception innerException) : base(message, innerException) { }
+        public PassGenArgsParseException(string message) : base(message) {}
+        public PassGenArgsParseException(string message, Exception innerException) : base(message, innerException) {}
     }
     
     public sealed class PassGenArgsParser
@@ -104,7 +104,8 @@ namespace PassGen.GlobalTool
             return salt;
         }
 
-        private string TryExtractSaltFromWindowsCredentialManager() {
+        private string TryExtractSaltFromWindowsCredentialManager() 
+        {
             if (!IsOsWindows())
                 return null;
             var credential = CredentialManager.GetCredentials(PgSalt);

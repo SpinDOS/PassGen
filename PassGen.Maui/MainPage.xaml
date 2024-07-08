@@ -4,7 +4,7 @@
              xmlns:local="clr-namespace:PassGen.Maui"
              x:Class="PassGen.Maui.MainPage"
              x:Name="_mainPage"
-             Appearing="OnAppearing">
+             Appearing="AppearingEventHandler">
     <ContentPage.Resources>
         <local:StringNotEmptyConverter x:Key="StringNotEmptyConverter"/>
         <local:DoubleWithFactorToThicknessConverter x:Key="AThirdOfHeightMarginConverter" ThicknessFactor="0, 0.33"/>

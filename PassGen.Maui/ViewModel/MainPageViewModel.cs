@@ -12,7 +12,7 @@ public class MainPageViewModel : INotifyPropertyChanged
     private string _salt;
     private string _generatedPassword;
 
-    private readonly ISaltStorage saltStorage_;
+    private readonly ISaltStorage _saltStorage;
     private readonly AsyncCommand _saveSaltCommand;
     private readonly AsyncCommand _clearSaltCommand;
     private readonly Command _invertUseSavedSaltCommand;
@@ -20,7 +20,9 @@ public class MainPageViewModel : INotifyPropertyChanged
 
     public MainPageViewModel(ISaltStorage saltStorage, IPasswordGenerator passwordGenerator)
     {
-        saltStorage_ = saltStorage;
+        _saltStorage = saltStorage ?? throw new ArgumentNullException(nameof(saltStorage));
+        passwordGenerator = passwordGenerator ?? throw new ArgumentNullException(nameof(passwordGenerator));
+        
         _saveSaltCommand = new AsyncCommand(
             execute: async() =>
             {
@@ -48,8 +50,9 @@ public class MainPageViewModel : INotifyPropertyChanged
             canExecute: () => !string.IsNullOrEmpty(TargetSite) && !string.IsNullOrEmpty(Salt));
     }
 
-    public async Task LoadDataAsync() {
-        Salt = SavedSalt = await saltStorage_.GetSalt();
+    public async Task LoadDataAsync() 
+    {
+        Salt = SavedSalt = await _saltStorage.GetSalt();
         UseSavedSalt = !string.IsNullOrEmpty(Salt);
     }
 

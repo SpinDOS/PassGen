@@ -6,24 +6,25 @@ namespace PassGen.Maui;
 
 public partial class MainPage : ContentPage
 {	
-	private readonly MainPageViewModel viewModel_;
-	private readonly AsyncCommand copyToClipboardCommand_;
+	private readonly MainPageViewModel _viewModel;
+	private readonly AsyncCommand _copyToClipboardCommand;
 	
 	public MainPage(MainPageViewModel viewModel)
 	{
-		viewModel_ = viewModel;
-		copyToClipboardCommand_ = CreateCopyToClipboardCommand(viewModel);
+		_viewModel = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
+		_copyToClipboardCommand = CreateCopyToClipboardCommand(viewModel);
 		BindingContext = viewModel;
 		InitializeComponent();
 	}
 
-	public ICommand CopyToClipboardCommand => copyToClipboardCommand_;
+	public ICommand CopyToClipboardCommand => _copyToClipboardCommand;
 
-	private async void OnAppearing(object sender, EventArgs e) {
-		await viewModel_.LoadDataAsync();
-		if (viewModel_.UseSavedSalt)
+	private async void AppearingEventHandler(object sender, EventArgs e) 
+	{
+		await _viewModel.LoadDataAsync();
+		if (_viewModel.UseSavedSalt)
 			_saltGroup.HeightRequest = 0; // collapse group without animation
-		viewModel_.PropertyChanged += OnModelPropertyChanged;
+		_viewModel.PropertyChanged += OnModelPropertyChanged;
 	}
 
 	private void OnModelPropertyChanged(object sender, PropertyChangedEventArgs eventArgs)
@@ -35,7 +36,7 @@ public partial class MainPage : ContentPage
 			AnimateVerticalExpand(_saltGroup, "SaltGroupExpandAnimation", !viewModel.UseSavedSalt);
 			break;
 		case nameof(viewModel.GeneratedPassword):
-			copyToClipboardCommand_.ChangeCanExecute();
+			_copyToClipboardCommand.ChangeCanExecute();
 			AnimateVerticalExpand(
 				_generatedPasswordGroup, 
 				"GeneratedPasswordExpandAnimation", 
@@ -60,7 +61,8 @@ public partial class MainPage : ContentPage
 			canExecute: () => !string.IsNullOrEmpty(viewModel.GeneratedPassword));
 	}
 
-	private static void AnimateVerticalExpand(Layout elementWrapper, string animationName, bool targetStateIsExpanded, Action<double, bool> finished = null) {
+	private static void AnimateVerticalExpand(Layout elementWrapper, string animationName, bool targetStateIsExpanded, Action<double, bool> finished = null) 
+	{
 		var actualHeight = elementWrapper.Height;
 		var desiredHeight = targetStateIsExpanded
 			? elementWrapper.Children.Single().Measure(double.PositiveInfinity, double.PositiveInfinity).Height
