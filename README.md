@@ -7,13 +7,13 @@ The technique is based on hashing. It's easy to calculate hash of given website 
 
 The tool is distributed in three different ways:
 
-### 1. dotnet global tool for installing on Windows, Linux or MacOS
+### 1. dotnet global tool for installation on Windows, Linux or MacOS
 
 Usage: `passgen <website> [master-pass]`
 
 master-pass can be provided with command line argument, environment variable PG_SALT or stored in text file under your home directory.
 
-You can download nuget package from [GitHub packages](https://github.com/SpinDOS/PassGen/packages) and install it as dotnet global tool with the following command: `dotnet tool install passgen --global --add-source "path/to/directory/containing/passgen.1.2.1.nupkg"`
+You can download nuget package from [GitHub packages](https://github.com/SpinDOS/PassGen/packages) or artifacts of GitHub action [ Build and upload nupkg](https://github.com/SpinDOS/PassGen/actions/workflows/build_global_tool_nuget.yml) and install it as dotnet global tool with the following command: `dotnet tool install passgen --global --add-source "path/to/directory/containing/passgen.1.0.0.nupkg"`
 
 <details>
 <summary>Example of password generating</summary>
@@ -26,7 +26,7 @@ You can download nuget package from [GitHub packages](https://github.com/SpinDOS
 
 ### 2. APK file for installation on Android OS
 
-The *.apk can be found as an artifact of the latest build of [Build Maui.Android APK file](https://github.com/SpinDOS/PassGen/actions?query=workflow%3A%22Build+Maui.Android+APK+file%22) GitHub Action and installed on your mobile with default package manager.
+The *.apk can be found as an artifact of the latest build of [Build Maui.Android APK file](https://github.com/SpinDOS/PassGen/actions/workflows/build_maui_android_apk.yml) GitHub Action and installed on your mobile with default package manager.
 
 <details>
 <summary>Example of password generating</summary>
@@ -38,6 +38,9 @@ The *.apk can be found as an artifact of the latest build of [Build Maui.Android
 </details>
 
 ### 3. Web interface for accessing with any browser
+
+NOTE: this method does not work!!! 
+It's not supported now.
 
 The service is hosted in Azure and can be accessed by the following link: https://passgen-alexanderplat.azurewebsites.net
 
