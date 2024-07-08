@@ -16,10 +16,11 @@ jobs:
         run: dotnet workload install maui
       - name: Restore dependencies
         run: dotnet restore PassGen.Maui
-      - name: Run dotnet build
-        run: dotnet build PassGen.Maui --no-restore --configuration Release --framework net8.0-android --output out
+      - name: Run dotnet publish
+        working-directory: ./PassGen.Maui
+        run: dotnet publish --no-restore --configuration Release --framework net8.0-android --output ./out
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: com.alexanderplat.passgen.maui-Signed.apk
-          path: out/com.alexanderplat.passgen.maui-Signed.apk
+          path: ./PassGen.Maui/out/com.alexanderplat.passgen.maui-Signed.apk
