@@ -1,27 +1,29 @@
 ﻿using System.ComponentModel;
+using System.Windows.Input;
 using CommunityToolkit.Maui.Alerts;
 
 namespace PassGen.Maui;
 
 public partial class MainPage : ContentPage
 {	
+	private readonly MainPageViewModel viewModel_;
+	private readonly AsyncCommand copyToClipboardCommand_;
+	
 	public MainPage(MainPageViewModel viewModel)
 	{
 		viewModel_ = viewModel;
+		copyToClipboardCommand_ = CreateCopyToClipboardCommand(viewModel);
 		BindingContext = viewModel;
-		CopyToClipboardCommand = CreateCopyToClipboardCommand(viewModel);
 		InitializeComponent();
-		viewModel.PropertyChanged += OnModelPropertyChanged;
-		if (viewModel.UseSavedSalt) 
-			_saltGroup.HeightRequest = 0; // collapse group without animation
 	}
 
-	private readonly MainPageViewModel viewModel_;
-
-	public Command CopyToClipboardCommand { get; }
+	public ICommand CopyToClipboardCommand => copyToClipboardCommand_;
 
 	private async void OnAppearing(object sender, EventArgs e) {
 		await viewModel_.LoadDataAsync();
+		if (viewModel_.UseSavedSalt)
+			_saltGroup.HeightRequest = 0; // collapse group without animation
+		viewModel_.PropertyChanged += OnModelPropertyChanged;
 	}
 
 	private void OnModelPropertyChanged(object sender, PropertyChangedEventArgs eventArgs)
@@ -30,15 +32,13 @@ public partial class MainPage : ContentPage
 		switch (eventArgs.PropertyName)
 		{
 		case nameof(viewModel.UseSavedSalt):
-			AnimateVerticalExpand(
-				"SaltGroupExpandAnimation", _saltGroup, !viewModel.UseSavedSalt, null
-			);
+			AnimateVerticalExpand(_saltGroup, "SaltGroupExpandAnimation", !viewModel.UseSavedSalt);
 			break;
 		case nameof(viewModel.GeneratedPassword):
-			CopyToClipboardCommand.ChangeCanExecute();
+			copyToClipboardCommand_.ChangeCanExecute();
 			AnimateVerticalExpand(
-				"GeneratedPasswordExpandAnimation", 
 				_generatedPasswordGroup, 
+				"GeneratedPasswordExpandAnimation", 
 				!string.IsNullOrEmpty(viewModel.GeneratedPassword),
 				CreateScrollToLastElementCallback(_mainScrollView, _lastElement)
 			);
@@ -48,9 +48,9 @@ public partial class MainPage : ContentPage
 		}
 	}
 
-	private Command CreateCopyToClipboardCommand(MainPageViewModel viewModel)
+	private static AsyncCommand CreateCopyToClipboardCommand(MainPageViewModel viewModel)
 	{
-		return new Command(
+		return new AsyncCommand(
 			execute: async () =>
 			{
 				await Clipboard.SetTextAsync(viewModel.GeneratedPassword);
@@ -60,27 +60,28 @@ public partial class MainPage : ContentPage
 			canExecute: () => !string.IsNullOrEmpty(viewModel.GeneratedPassword));
 	}
 
-	private static void AnimateVerticalExpand(string animationName, Grid wrapperGrid, bool targetStateIsExpanded, Action<double, bool> finished) {
-		var actualHeight = wrapperGrid.Height;
+	private static void AnimateVerticalExpand(Layout elementWrapper, string animationName, bool targetStateIsExpanded, Action<double, bool> finished = null) {
+		var actualHeight = elementWrapper.Height;
 		var desiredHeight = targetStateIsExpanded
-			? wrapperGrid.Children.Single().Measure(double.PositiveInfinity, double.PositiveInfinity).Height
+			? elementWrapper.Children.Single().Measure(double.PositiveInfinity, double.PositiveInfinity).Height
 			: 0.0;
-		wrapperGrid.CancelAnimations();
-		wrapperGrid.Animate(animationName,
-			CreateExpandAnimationCallback(wrapperGrid),
+		elementWrapper.CancelAnimations();
+		elementWrapper.Animate(
+			animationName,
+			CreateExpandAnimationCallback(elementWrapper),
 			actualHeight,
 			desiredHeight,
 			finished: finished
 		);
 	}
 
-	private static Action<double> CreateExpandAnimationCallback(Grid grid)
+	private static Action<double> CreateExpandAnimationCallback(VisualElement element)
 	{
-		var weakReferenceGrid = new WeakReference<Grid>(grid);
+		var weakReferenceElement = new WeakReference<VisualElement>(element);
 		return it =>
 		{
-			if (weakReferenceGrid.TryGetTarget(out var strongReferenceGrid))
-				strongReferenceGrid.HeightRequest = it;
+			if (weakReferenceElement.TryGetTarget(out var strongReferenceElement))
+				strongReferenceElement.HeightRequest = it;
 		};
 	}
 

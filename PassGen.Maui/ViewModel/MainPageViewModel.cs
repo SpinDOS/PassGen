@@ -13,15 +13,15 @@ public class MainPageViewModel : INotifyPropertyChanged
     private string _generatedPassword;
 
     private readonly ISaltStorage saltStorage_;
-    private readonly Command _saveSaltCommand;
-    private readonly Command _clearSaltCommand;
+    private readonly AsyncCommand _saveSaltCommand;
+    private readonly AsyncCommand _clearSaltCommand;
     private readonly Command _invertUseSavedSaltCommand;
     private readonly Command _generatePasswordCommand;
 
     public MainPageViewModel(ISaltStorage saltStorage, IPasswordGenerator passwordGenerator)
     {
         saltStorage_ = saltStorage;
-        _saveSaltCommand = new Command(
+        _saveSaltCommand = new AsyncCommand(
             execute: async() =>
             {
                 var salt = Salt;
@@ -30,7 +30,7 @@ public class MainPageViewModel : INotifyPropertyChanged
             }, 
             canExecute: () => !string.IsNullOrEmpty(Salt));
         
-        _clearSaltCommand = new Command(
+        _clearSaltCommand = new AsyncCommand(
             execute: async() =>
             {
                 await saltStorage.ClearSalt();

@@ -47,7 +47,7 @@ public partial class ButtonWithGreenClick : Grid
 
         public async void Execute(object parameter)
         {
-            _command.Execute(parameter);
+            await _command.ExecuteAsyncOrSync(parameter);
             if (_btnGreen.TryGetTarget(out var btnGreen) && btnGreen != null)
                 await AnimateGreenColor(btnGreen);
         }
