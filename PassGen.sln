@@ -1,18 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# 
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassGen.GlobalTool", "PassGen.GlobalTool\PassGen.GlobalTool.csproj", "{A2C2BDB2-CAF1-496B-9997-CD3F7E9B107C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassGen.Lib", "PassGen.Lib\PassGen.Lib.csproj", "{079AC93D-1931-43E3-ABD4-E36DD2AB379F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassGen.Xamarin", "PassGen.Xamarin\PassGen.Xamarin\PassGen.Xamarin.csproj", "{73938DE5-DF21-4621-B6C4-254409B1C58B}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassGen.Xamarin.Android", "PassGen.Xamarin\PassGen.Xamarin.Android\PassGen.Xamarin.Android.csproj", "{A9CD71B0-6F1B-42B5-B5F6-B29563823DFD}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassGen.Xamarin.iOS", "PassGen.Xamarin\PassGen.Xamarin.iOS\PassGen.Xamarin.iOS.csproj", "{682AEF64-C2B8-473E-AE30-B8B974B752D3}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassGen.Tests", "PassGen.Tests\PassGen.Tests.csproj", "{EF0E2EEC-BDD5-4E8C-9336-F9DDDFB3BACD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassGen.Web", "PassGen.Web\PassGen.Web.csproj", "{F72CD0A0-D5BB-45DF-A8C1-A9D7A563F03B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassGen.Maui", "PassGen.Maui\PassGen.Maui.csproj", "{21BE0E49-7A1F-4223-9FAF-C8905FCCA8A0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -28,18 +25,6 @@ Global
 		{079AC93D-1931-43E3-ABD4-E36DD2AB379F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{079AC93D-1931-43E3-ABD4-E36DD2AB379F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{079AC93D-1931-43E3-ABD4-E36DD2AB379F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{73938DE5-DF21-4621-B6C4-254409B1C58B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{73938DE5-DF21-4621-B6C4-254409B1C58B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{73938DE5-DF21-4621-B6C4-254409B1C58B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{73938DE5-DF21-4621-B6C4-254409B1C58B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A9CD71B0-6F1B-42B5-B5F6-B29563823DFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A9CD71B0-6F1B-42B5-B5F6-B29563823DFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A9CD71B0-6F1B-42B5-B5F6-B29563823DFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A9CD71B0-6F1B-42B5-B5F6-B29563823DFD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{682AEF64-C2B8-473E-AE30-B8B974B752D3}.Debug|Any CPU.ActiveCfg = Debug|iPhoneSimulator
-		{682AEF64-C2B8-473E-AE30-B8B974B752D3}.Debug|Any CPU.Build.0 = Debug|iPhoneSimulator
-		{682AEF64-C2B8-473E-AE30-B8B974B752D3}.Release|Any CPU.ActiveCfg = Release|iPhone
-		{682AEF64-C2B8-473E-AE30-B8B974B752D3}.Release|Any CPU.Build.0 = Release|iPhone
 		{EF0E2EEC-BDD5-4E8C-9336-F9DDDFB3BACD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EF0E2EEC-BDD5-4E8C-9336-F9DDDFB3BACD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF0E2EEC-BDD5-4E8C-9336-F9DDDFB3BACD}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -48,5 +33,9 @@ Global
 		{F72CD0A0-D5BB-45DF-A8C1-A9D7A563F03B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F72CD0A0-D5BB-45DF-A8C1-A9D7A563F03B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F72CD0A0-D5BB-45DF-A8C1-A9D7A563F03B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{21BE0E49-7A1F-4223-9FAF-C8905FCCA8A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21BE0E49-7A1F-4223-9FAF-C8905FCCA8A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{21BE0E49-7A1F-4223-9FAF-C8905FCCA8A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{21BE0E49-7A1F-4223-9FAF-C8905FCCA8A0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

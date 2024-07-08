@@ -1,0 +1,95 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:PassGen.Maui"
+             x:Class="PassGen.Maui.MainPage"
+             x:Name="_mainPage"
+             Appearing="OnAppearing">
+    <ContentPage.Resources>
+        <local:StringNotEmptyConverter x:Key="StringNotEmptyConverter"/>
+        <local:DoubleWithFactorToThicknessConverter x:Key="AThirdOfHeightMarginConverter" ThicknessFactor="0, 0.33"/>
+    </ContentPage.Resources>
+    <ScrollView x:Name="_mainScrollView">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="8*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
+                   Text="PassGen"
+                   HorizontalOptions="CenterAndExpand"
+                   HorizontalTextAlignment="Center"
+                   FontSize="Title"
+                   Margin="{Binding Source={RelativeSource Self}, Path=Height, Converter={StaticResource AThirdOfHeightMarginConverter}}"/>
+            <StackLayout Grid.Row="1" Grid.Column="1">
+                <Label Text="Target site: "
+                       HorizontalOptions="Start"
+                       VerticalOptions="Start"
+                       Margin="0, 0, 0, 3"/>
+                <Grid>
+                    <!-- strange bug in maui: Clear button does not work if Entry is after Label under StackLayout -->
+                    <Entry Text="{Binding TargetSite, Mode=TwoWay}"
+                        ClearButtonVisibility="WhileEditing"
+                        Placeholder="not-secret-site.com"
+                        IsSpellCheckEnabled="False"
+                        IsTextPredictionEnabled="False"
+                        ReturnCommand="{Binding GeneratePasswordCommand}"
+                        HorizontalOptions="Fill"
+                        Keyboard="Url"/>
+                </Grid>
+                <StackLayout Orientation="Horizontal">
+                    <CheckBox IsEnabled="{Binding SavedSalt, Converter={StaticResource StringNotEmptyConverter}}"
+                              IsChecked="{Binding UseSavedSalt, Mode=TwoWay}"
+                              VerticalOptions="Center"/>
+                    <Label Text="Use saved salt?"
+                           HorizontalOptions="Start"
+                           HorizontalTextAlignment="Start"
+                           VerticalOptions="Center"
+                           VerticalTextAlignment="Center">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding InvertUseSavedSaltCommand}"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+                </StackLayout>
+                <Grid x:Name="_saltGroup" IsClippedToBounds="True">
+                    <StackLayout Orientation="Vertical">
+                        <Label Text="Salt: " Margin="0, 0, 0, 3"/>
+                        <local:ShowHidePasswordEntry Text="{Binding Salt, Mode=TwoWay}"
+                                                    Placeholder="Your secret password"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <local:ButtonWithGreenClick Grid.Column="0"
+                                    Text="Save salt"
+                                    Margin="0, 5, 5, 5"
+                                    Command="{Binding SaveSaltCommand}"/>
+                            <Button Grid.Column="1"
+                                    Text="Clear salt"
+                                    Margin="5, 5, 0, 5"
+                                    Command="{Binding ClearSaltCommand}"/>
+                        </Grid>
+                    </StackLayout>
+                </Grid>
+                <local:ButtonWithGreenClick Text="Generate password" Margin="0, 5" 
+                    Command="{Binding GeneratePasswordCommand}"/>
+                <Grid x:Name="_generatedPasswordGroup" IsClippedToBounds="True" HeightRequest="0">
+                    <StackLayout Orientation="Vertical">
+                        <Label Text="Generated password: " Margin="0, 0, 0, 3"/>
+                        <local:ShowHidePasswordEntry Text="{Binding GeneratedPassword, Mode=TwoWay}"/>
+                        <local:ButtonWithGreenClick Text="Copy to clipboard" Margin="0, 5" 
+                            Command="{Binding Source={x:Reference _mainPage}, Path=CopyToClipboardCommand}"/>
+                        <Label HeightRequest="0" WidthRequest="0" x:Name="_lastElement"/>
+                    </StackLayout>
+                </Grid>
+            </StackLayout>
+        </Grid>
+    </ScrollView>
+    
+</ContentPage>
