@@ -1,181 +1,83 @@
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Windows.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 namespace PassGen.Maui;
 
-public class MainPageViewModel : INotifyPropertyChanged
+public partial class MainPageViewModel : ObservableObject
 {
-    private string _targetSite;
-    private bool _useSavedSalt;
-    private string _savedSalt;
-    private string _salt;
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(GeneratePasswordCommand))]
+    private string targetSite;
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(GeneratePasswordCommand))]
+    private bool useSavedSalt;
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(ClearSavedSaltCommand), nameof(InvertUseSavedSaltCommand), nameof(GeneratePasswordCommand))]
+    private string savedSalt;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasSalt))]
+    [NotifyCanExecuteChangedFor(nameof(SaveSaltCommand), nameof(GeneratePasswordCommand))]
+    private string salt;
+
+    [ObservableProperty]
     private string _generatedPassword;
 
-    private readonly WeakEventManager _weakEventManager = new WeakEventManager();
     private readonly ISaltStorage _saltStorage;
-    private readonly AsyncCommand _saveSaltCommand;
-    private readonly AsyncCommand _clearSavedSaltCommand;
-    private readonly Command _invertUseSavedSaltCommand;
-    private readonly Command _generatePasswordCommand;
+    private readonly IPasswordGenerator _passwordGenerator;
 
     public MainPageViewModel(ISaltStorage saltStorage, IPasswordGenerator passwordGenerator)
     {
         _saltStorage = saltStorage ?? throw new ArgumentNullException(nameof(saltStorage));
-        passwordGenerator = passwordGenerator ?? throw new ArgumentNullException(nameof(passwordGenerator));
-
-        _saveSaltCommand = new AsyncCommand(
-            execute: async() =>
-            {
-                await saltStorage.SetSalt(Salt);
-                SavedSalt = Salt;
-                UseSavedSalt = true;
-                Salt = null;
-            },
-            canExecute: () => HasSalt);
-
-        _clearSavedSaltCommand = new AsyncCommand(
-            execute: async() =>
-            {
-                await saltStorage.ClearSalt();
-                SavedSalt = null;
-                UseSavedSalt = false;
-            },
-            canExecute: () => HasSavedSalt);
-
-        _invertUseSavedSaltCommand = new Command(
-            execute: () => UseSavedSalt = !UseSavedSalt,
-            canExecute: () => HasSavedSalt);
-
-        _generatePasswordCommand = new Command(
-            execute: () => GeneratedPassword = passwordGenerator.GeneratePassword(TargetSite, SaltToUse),
-            canExecute: () => !string.IsNullOrEmpty(TargetSite) && !string.IsNullOrEmpty(SaltToUse));
+        _passwordGenerator = passwordGenerator ?? throw new ArgumentNullException(nameof(passwordGenerator));
     }
 
-    public async Task LoadDataAsync() => SavedSalt = await _saltStorage.GetSalt();
+    [RelayCommand]
+    private async Task LoadData() => SavedSalt = await _saltStorage.GetSalt();
 
-    public ICommand SaveSaltCommand => _saveSaltCommand;
-    public ICommand ClearSavedSaltCommand => _clearSavedSaltCommand;
-    public ICommand InvertUseSavedSaltCommand => _invertUseSavedSaltCommand;
-    public ICommand GeneratePasswordCommand => _generatePasswordCommand;
-
-    public string TargetSite
+    [RelayCommand(CanExecute=nameof(HasSalt))]
+    private async Task SaveSalt()
     {
-        get => _targetSite;
-        set
-        {
-            if (_targetSite == value)
-                return;
-
-            var isChangedHasValue = string.IsNullOrEmpty(_targetSite) != string.IsNullOrEmpty(value);
-
-            _targetSite = value;
-            OnPropertyChanged(nameof(TargetSite));
-
-            GeneratedPassword = null;
-
-            if (isChangedHasValue)
-                _generatePasswordCommand.ChangeCanExecute();
-        }
+        await _saltStorage.SetSalt(Salt);
+        SavedSalt = Salt;
+        Salt = null;
     }
 
-    public bool UseSavedSalt
+    [RelayCommand(CanExecute=nameof(HasSavedSalt))]
+    private async Task ClearSavedSalt()
     {
-        get => _useSavedSalt;
-        set
-        {
-            if (_useSavedSalt == value)
-                return;
-
-            _useSavedSalt = value;
-            OnPropertyChanged(nameof(UseSavedSalt));
-
-            Salt = null;
-            GeneratedPassword = null;
-
-            _generatePasswordCommand.ChangeCanExecute();
-        }
+        await _saltStorage.ClearSalt();
+        SavedSalt = null;
     }
 
-    public string Salt
+    [RelayCommand(CanExecute=nameof(HasSavedSalt))]
+    private void InvertUseSavedSalt() => UseSavedSalt = !UseSavedSalt;
+
+    [RelayCommand(CanExecute=nameof(CanGeneratePassword))]
+    private void GeneratePassword() => GeneratedPassword = _passwordGenerator.GeneratePassword(TargetSite, SaltToUse);
+    private bool CanGeneratePassword() => !string.IsNullOrEmpty(TargetSite) && !string.IsNullOrEmpty(SaltToUse);
+
+    partial void OnTargetSiteChanged(string oldValue, string newValue) => GeneratedPassword = null;
+
+    partial void OnUseSavedSaltChanged(bool oldValue, bool newValue)
     {
-        get => _salt;
-        set
-        {
-            if (_salt == value)
-                return;
-
-            var isChangedHasValue = string.IsNullOrEmpty(_salt) != string.IsNullOrEmpty(value);
-
-            _salt = value;
-            OnPropertyChanged(nameof(Salt));
-
-            if (isChangedHasValue)
-                OnPropertyChanged(nameof(HasSalt));
-
-            GeneratedPassword = null;
-
-            if (isChangedHasValue)
-            {
-                _saveSaltCommand.ChangeCanExecute();
-                _generatePasswordCommand.ChangeCanExecute();
-            }
-        }
+        Salt = null;
+        GeneratedPassword = null;
     }
 
-    public bool HasSalt => !string.IsNullOrEmpty(Salt);
-
-    public string GeneratedPassword
+    partial void OnSavedSaltChanged(string oldValue, string newValue)
     {
-        get => _generatedPassword;
-        set
-        {
-            if (_generatedPassword == value)
-                return;
-
-            _generatedPassword = value;
-            OnPropertyChanged(nameof(GeneratedPassword));
-        }
+        OnPropertyChanged(nameof(HasSavedSalt)); // maui incorrectly handles update of HasSavedSalt after UseSavedSalt
+        UseSavedSalt = !string.IsNullOrEmpty(newValue);
+        GeneratedPassword = null;
     }
 
-    public event PropertyChangedEventHandler PropertyChanged
-    {
-        add => _weakEventManager.AddEventHandler(value, nameof(PropertyChanged));
-        remove => _weakEventManager.RemoveEventHandler(value, nameof(PropertyChanged));
-    }
-
-    protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) =>
-        _weakEventManager.HandleEvent(this, new PropertyChangedEventArgs(propertyName), nameof(PropertyChanged));
-
-    private string SavedSalt
-    {
-        get => _savedSalt;
-        set
-        {
-            if (_savedSalt == value)
-                return;
-
-            var isChangedHasValue = string.IsNullOrEmpty(_savedSalt) != string.IsNullOrEmpty(value);
-
-            _savedSalt = value;
-            // SavedSalt is private property, no need to call OnPropertyChanged
-
-            if (isChangedHasValue)
-                OnPropertyChanged(nameof(HasSavedSalt));
-
-            UseSavedSalt = !string.IsNullOrEmpty(value);
-            GeneratedPassword = null;
-
-            if (isChangedHasValue)
-            {
-                _clearSavedSaltCommand.ChangeCanExecute();
-                _invertUseSavedSaltCommand.ChangeCanExecute();
-                _generatePasswordCommand.ChangeCanExecute();
-            }
-        }
-    }
+    partial void OnSaltChanged(string oldValue, string newValue) => GeneratedPassword = null;
 
     public bool HasSavedSalt => !string.IsNullOrEmpty(SavedSalt);
+    public bool HasSalt => !string.IsNullOrEmpty(Salt);
 
     private string SaltToUse => UseSavedSalt ? SavedSalt : Salt;
 }

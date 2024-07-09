@@ -3,8 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:PassGen.Maui"
              x:Class="PassGen.Maui.MainPage"
-             x:Name="_mainPage"
-             Appearing="AppearingEventHandler">
+             x:Name="_mainPage">
     <ContentPage.Resources>
         <local:DoubleWithFactorToThicknessConverter x:Key="AThirdOfHeightMarginConverter" ThicknessFactor="0, 0.33"/>
     </ContentPage.Resources>

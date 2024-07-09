@@ -1,33 +1,40 @@
 ﻿using System.ComponentModel;
-using System.Windows.Input;
 using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Mvvm.Input;
 
 namespace PassGen.Maui;
 
 public partial class MainPage : ContentPage
-{	
+{
 	private readonly MainPageViewModel _viewModel;
-	private readonly AsyncCommand _copyToClipboardCommand;
-	
+
 	public MainPage(MainPageViewModel viewModel)
 	{
 		_viewModel = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
-		_copyToClipboardCommand = CreateCopyToClipboardCommand(viewModel);
-		BindingContext = viewModel;
 		InitializeComponent();
 	}
 
-	public ICommand CopyToClipboardCommand => _copyToClipboardCommand;
-
-	private async void AppearingEventHandler(object sender, EventArgs e) 
+	protected override async void OnAppearing()
 	{
-		await _viewModel.LoadDataAsync();
+		base.OnAppearing();
+		await _viewModel.LoadDataCommand.ExecuteAsync(null);
 		if (_viewModel.UseSavedSalt)
 			_saltGroup.HeightRequest = 0; // collapse group without animation
-		_viewModel.PropertyChanged += OnModelPropertyChanged;
+		_viewModel.PropertyChanged += ModelPropertyChangedEventHandler;
+		BindingContext = _viewModel;
 	}
 
-	private void OnModelPropertyChanged(object sender, PropertyChangedEventArgs eventArgs)
+	[RelayCommand(CanExecute=nameof(CanCopyToClipboard))]
+	private async Task CopyToClipboard()
+	{
+		await Clipboard.SetTextAsync(_viewModel.GeneratedPassword);
+		if (OperatingSystem.IsAndroid())
+			await Toast.Make("Successfully copied generated password to clipboard").Show();
+	}
+
+	private bool CanCopyToClipboard() => !string.IsNullOrEmpty(_viewModel?.GeneratedPassword);
+
+	private void ModelPropertyChangedEventHandler(object sender, PropertyChangedEventArgs eventArgs)
 	{
 		var viewModel = (MainPageViewModel)sender;
 		switch (eventArgs.PropertyName)
@@ -36,10 +43,10 @@ public partial class MainPage : ContentPage
 			AnimateVerticalExpand(_saltGroup, "SaltGroupExpandAnimation", !viewModel.UseSavedSalt);
 			break;
 		case nameof(viewModel.GeneratedPassword):
-			_copyToClipboardCommand.ChangeCanExecute();
+			CopyToClipboardCommand.NotifyCanExecuteChanged();
 			AnimateVerticalExpand(
-				_generatedPasswordGroup, 
-				"GeneratedPasswordExpandAnimation", 
+				_generatedPasswordGroup,
+				"GeneratedPasswordExpandAnimation",
 				!string.IsNullOrEmpty(viewModel.GeneratedPassword),
 				CreateScrollToLastElementCallback(_mainScrollView, _lastElement)
 			);
@@ -49,25 +56,13 @@ public partial class MainPage : ContentPage
 		}
 	}
 
-	private static AsyncCommand CreateCopyToClipboardCommand(MainPageViewModel viewModel)
-	{
-		return new AsyncCommand(
-			execute: async () =>
-			{
-				await Clipboard.SetTextAsync(viewModel.GeneratedPassword);
-				if (OperatingSystem.IsAndroid())
-					await Toast.Make("Successfully copied generated password to clipboard").Show();
-			},
-			canExecute: () => !string.IsNullOrEmpty(viewModel.GeneratedPassword));
-	}
-
-	private static void AnimateVerticalExpand(Layout elementWrapper, string animationName, bool targetStateIsExpanded, Action<double, bool> finished = null) 
+	private static void AnimateVerticalExpand(Layout elementWrapper, string animationName, bool targetStateIsExpanded, Action<double, bool> finished = null)
 	{
 		var actualHeight = elementWrapper.Height;
 		var desiredHeight = targetStateIsExpanded
 			? elementWrapper.Children.Single().Measure(double.PositiveInfinity, double.PositiveInfinity).Height
 			: 0.0;
-		elementWrapper.CancelAnimations();
+		elementWrapper.AbortAnimation(animationName);
 		elementWrapper.Animate(
 			animationName,
 			CreateExpandAnimationCallback(elementWrapper),
@@ -93,7 +88,7 @@ public partial class MainPage : ContentPage
 		var weakReferenceElem = new WeakReference<Element>(lastElement);
 		return async (d, canceled) =>
 		{
-			if (!canceled && 
+			if (!canceled &&
 				weakReferenceScrollView.TryGetTarget(out var strongReferenceScrollView) &&
 				weakReferenceElem.TryGetTarget(out var strongReferenceElem))
 			{
