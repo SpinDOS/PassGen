@@ -6,7 +6,6 @@
              x:Name="_mainPage"
              Appearing="AppearingEventHandler">
     <ContentPage.Resources>
-        <local:StringNotEmptyConverter x:Key="StringNotEmptyConverter"/>
         <local:DoubleWithFactorToThicknessConverter x:Key="AThirdOfHeightMarginConverter" ThicknessFactor="0, 0.33"/>
     </ContentPage.Resources>
     <ScrollView x:Name="_mainScrollView">
@@ -43,7 +42,7 @@
                         Keyboard="Url"/>
                 </Grid>
                 <StackLayout Orientation="Horizontal">
-                    <CheckBox IsEnabled="{Binding SavedSalt, Converter={StaticResource StringNotEmptyConverter}}"
+                    <CheckBox IsEnabled="{Binding HasSavedSalt}"
                               IsChecked="{Binding UseSavedSalt, Mode=TwoWay}"
                               VerticalOptions="Center"/>
                     <Label Text="Use saved salt?"
@@ -59,8 +58,10 @@
                 <Grid x:Name="_saltGroup" IsClippedToBounds="True">
                     <StackLayout Orientation="Vertical">
                         <Label Text="Salt: " Margin="0, 0, 0, 3"/>
-                        <local:ShowHidePasswordEntry Text="{Binding Salt, Mode=TwoWay}"
-                                                    Placeholder="Your secret password"/>
+                        <local:ShowHidePasswordEntry
+                            Text="{Binding Salt, Mode=TwoWay}"
+                            Placeholder="Your secret password"
+                            ReturnCommand="{Binding GeneratePasswordCommand}"/>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
@@ -77,13 +78,13 @@
                         </Grid>
                     </StackLayout>
                 </Grid>
-                <local:ButtonWithGreenClick Text="Generate password" Margin="0, 5" 
+                <local:ButtonWithGreenClick Text="Generate password" Margin="0, 5"
                     Command="{Binding GeneratePasswordCommand}"/>
                 <Grid x:Name="_generatedPasswordGroup" IsClippedToBounds="True" HeightRequest="0">
                     <StackLayout Orientation="Vertical">
                         <Label Text="Generated password: " Margin="0, 0, 0, 3"/>
                         <local:ShowHidePasswordEntry Text="{Binding GeneratedPassword, Mode=TwoWay}"/>
-                        <local:ButtonWithGreenClick Text="Copy to clipboard" Margin="0, 5" 
+                        <local:ButtonWithGreenClick Text="Copy to clipboard" Margin="0, 5"
                             Command="{Binding Source={x:Reference _mainPage}, Path=CopyToClipboardCommand}"/>
                         <Label HeightRequest="0" WidthRequest="0" x:Name="_lastElement"/>
                     </StackLayout>
@@ -91,5 +92,5 @@
             </StackLayout>
         </Grid>
     </ScrollView>
-    
+
 </ContentPage>
