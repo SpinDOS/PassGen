@@ -37,7 +37,7 @@ public class MainPageViewModel : INotifyPropertyChanged
             execute: async() =>
             {
                 await saltStorage.ClearSalt();
-                Salt = SavedSalt = null;
+                SavedSalt = null;
             },
             canExecute: () => HasSavedSalt);
 
