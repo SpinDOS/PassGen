@@ -1,3 +1,4 @@
+using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -23,6 +24,7 @@ public partial class MainPageViewModel : ObservableObject
     private string salt;
 
     [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(CopyToClipboardCommand))]
     private string _generatedPassword;
 
     private readonly ISaltStorage _saltStorage;
@@ -57,6 +59,16 @@ public partial class MainPageViewModel : ObservableObject
     [RelayCommand(CanExecute=nameof(CanGeneratePassword))]
     private void GeneratePassword() => GeneratedPassword = _passwordGenerator.GeneratePassword(TargetSite, SaltToUse);
     private bool CanGeneratePassword() => !string.IsNullOrEmpty(TargetSite) && !string.IsNullOrEmpty(SaltToUse);
+
+	[RelayCommand(CanExecute=nameof(CanCopyToClipboard))]
+	private async Task CopyToClipboard()
+	{
+		await Clipboard.SetTextAsync(GeneratedPassword);
+		if (OperatingSystem.IsAndroid())
+			await Toast.Make("Successfully copied generated password to clipboard").Show();
+	}
+
+	private bool CanCopyToClipboard() => !string.IsNullOrEmpty(GeneratedPassword);
 
     partial void OnTargetSiteChanged(string oldValue, string newValue) => GeneratedPassword = null;
 

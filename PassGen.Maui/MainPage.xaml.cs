@@ -1,6 +1,4 @@
 ﻿using System.ComponentModel;
-using CommunityToolkit.Maui.Alerts;
-using CommunityToolkit.Mvvm.Input;
 
 namespace PassGen.Maui;
 
@@ -13,20 +11,10 @@ public partial class MainPage : ContentPage
 		InitializeComponent();
 		_viewModel = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
 		BindingContext = _viewModel;
-		if (_viewModel.UseSavedSalt)
-			_saltGroup.HeightRequest = 0; // collapse group without animation
+
+		_saltGroup.RemoveBinding(Grid.HeightRequestProperty);
 		_viewModel.PropertyChanged += ModelPropertyChangedEventHandler;
 	}
-
-	[RelayCommand(CanExecute=nameof(CanCopyToClipboard))]
-	private async Task CopyToClipboard()
-	{
-		await Clipboard.SetTextAsync(_viewModel.GeneratedPassword);
-		if (OperatingSystem.IsAndroid())
-			await Toast.Make("Successfully copied generated password to clipboard").Show();
-	}
-
-	private bool CanCopyToClipboard() => !string.IsNullOrEmpty(_viewModel?.GeneratedPassword);
 
 	private void ModelPropertyChangedEventHandler(object sender, PropertyChangedEventArgs eventArgs)
 	{
@@ -37,7 +25,6 @@ public partial class MainPage : ContentPage
 			AnimateVerticalExpand(_saltGroup, "SaltGroupExpandAnimation", !viewModel.UseSavedSalt);
 			break;
 		case nameof(viewModel.GeneratedPassword):
-			CopyToClipboardCommand.NotifyCanExecuteChanged();
 			AnimateVerticalExpand(
 				_generatedPasswordGroup,
 				"GeneratedPasswordExpandAnimation",
