@@ -15,7 +15,7 @@ public class MainPageViewModel : INotifyPropertyChanged
     private readonly WeakEventManager _weakEventManager = new WeakEventManager();
     private readonly ISaltStorage _saltStorage;
     private readonly AsyncCommand _saveSaltCommand;
-    private readonly AsyncCommand _clearSaltCommand;
+    private readonly AsyncCommand _clearSavedSaltCommand;
     private readonly Command _invertUseSavedSaltCommand;
     private readonly Command _generatePasswordCommand;
 
@@ -35,7 +35,7 @@ public class MainPageViewModel : INotifyPropertyChanged
             },
             canExecute: () => HasSalt);
 
-        _clearSaltCommand = new AsyncCommand(
+        _clearSavedSaltCommand = new AsyncCommand(
             execute: async() =>
             {
                 await saltStorage.ClearSalt();
@@ -59,7 +59,7 @@ public class MainPageViewModel : INotifyPropertyChanged
     }
 
     public ICommand SaveSaltCommand => _saveSaltCommand;
-    public ICommand ClearSaltCommand => _clearSaltCommand;
+    public ICommand ClearSavedSaltCommand => _clearSavedSaltCommand;
     public ICommand InvertUseSavedSaltCommand => _invertUseSavedSaltCommand;
     public ICommand GeneratePasswordCommand => _generatePasswordCommand;
 
@@ -157,7 +157,7 @@ public class MainPageViewModel : INotifyPropertyChanged
             if (string.IsNullOrEmpty(oldValue) != string.IsNullOrEmpty(value))
             {
                 OnPropertyChanged(nameof(HasSavedSalt));
-                _clearSaltCommand.ChangeCanExecute();
+                _clearSavedSaltCommand.ChangeCanExecute();
                 _invertUseSavedSaltCommand.ChangeCanExecute();
                 _generatePasswordCommand.ChangeCanExecute();
             }

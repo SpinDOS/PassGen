@@ -72,9 +72,9 @@
                                     Margin="0, 5, 5, 5"
                                     Command="{Binding SaveSaltCommand}"/>
                             <Button Grid.Column="1"
-                                    Text="Clear salt"
+                                    Text="Clear saved salt"
                                     Margin="5, 5, 0, 5"
-                                    Command="{Binding ClearSaltCommand}"/>
+                                    Command="{Binding ClearSavedSaltCommand}"/>
                         </Grid>
                     </StackLayout>
                 </Grid>
