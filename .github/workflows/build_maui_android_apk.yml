@@ -20,18 +20,15 @@ jobs:
         run: dotnet workload install maui
       - name: Restore dependencies
         run: dotnet restore PassGen.Maui
-      - name: Unpack keystore for APK signing
-        shell: pwsh
+      - name: Prepare keystore for APK signing
+        shell: bash
         env:
           PASSGEN_MAUI_KEYSTORE_BASE64: ${{ secrets.PASSGEN_MAUI_KEYSTORE_BASE64 }}
-        working-directory: ./PassGen.Maui
-        run: |
-          echo "$env:PASSGEN_MAUI_KEYSTORE_BASE64" > passgen_maui_base64.txt
-          python -c 'import base64, sys; base64.decode(open(sys.argv[1], "rb"), open(sys.argv[2], "wb"))' passgen_maui_base64.txt passgen_maui.keystore
+        run: echo "$PASSGEN_MAUI_KEYSTORE_BASE64" | base64 --decode > ./PassGen.Maui/passgen_maui.keystore
       - name: Run dotnet publish
+        working-directory: ./PassGen.Maui
         env:
           PASSGEN_MAUI_KEYSTORE_PASSWORD: ${{ secrets.PASSGEN_MAUI_KEYSTORE_PASSWORD }}
-        working-directory: ./PassGen.Maui
         run: dotnet publish --no-restore --configuration Release --framework net8.0-android --output ./out -p:AndroidKeyStore=true -p:AndroidSigningKeyStore=passgen_maui.keystore -p:AndroidSigningKeyAlias=passgen_maui -p:AndroidSigningKeyPass=env:PASSGEN_MAUI_KEYSTORE_PASSWORD -p:AndroidSigningStorePass=env:PASSGEN_MAUI_KEYSTORE_PASSWORD
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v4
