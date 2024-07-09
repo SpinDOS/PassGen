@@ -17,9 +17,10 @@ public static class MauiProgram
 				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
 			});
 
-		builder.Services.AddTransient<MainPage>(_ => new MainPage(
-			new MainPageViewModel(new SaltStorage(), new PasswordGeneratorAdapter())
-		));
+		var mainPageViewModel = new MainPageViewModel(new SaltStorage(), new PasswordGeneratorAdapter());
+		Task.Run(() => mainPageViewModel.LoadDataAsync()).Wait();
+
+		builder.Services.AddTransient<MainPage>(_ => new MainPage(mainPageViewModel));
 
 #if DEBUG
 		builder.Logging.AddDebug();

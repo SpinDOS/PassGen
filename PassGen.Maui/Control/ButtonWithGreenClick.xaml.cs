@@ -22,7 +22,7 @@ public partial class ButtonWithGreenClick : Grid
         set => SetValue(CommandProperty, value);
     }
 
-    private static void OnCommandPropertyChanged(BindableObject obj, object oldValue, object newValue) 
+    private static void OnCommandPropertyChanged(BindableObject obj, object oldValue, object newValue)
     {
         var buttonWithGreenClick = (ButtonWithGreenClick) obj;
         buttonWithGreenClick._btnClick.Command = newValue != null
@@ -30,17 +30,17 @@ public partial class ButtonWithGreenClick : Grid
             : null;
     }
 
-    private sealed class CommandWrapper : IAsyncCommand 
+    private sealed class CommandWrapper : IAsyncCommand
     {
         private readonly ICommand _command;
         private readonly WeakReference<VisualElement> _btnGreen;
-        public CommandWrapper(ICommand command, WeakReference<VisualElement> btnGreen) 
+        public CommandWrapper(ICommand command, WeakReference<VisualElement> btnGreen)
         {
             _command = command ?? throw new ArgumentNullException(nameof(command));
             _btnGreen = btnGreen ?? throw new ArgumentNullException(nameof(btnGreen));
         }
 
-        public event EventHandler CanExecuteChanged 
+        public event EventHandler CanExecuteChanged
         {
             add => _command.CanExecuteChanged += value;
             remove => _command.CanExecuteChanged -= value;
@@ -56,7 +56,7 @@ public partial class ButtonWithGreenClick : Grid
                 await AnimateGreenColor(btnGreen);
         }
 
-        private static async Task AnimateGreenColor(VisualElement element) 
+        private static async Task AnimateGreenColor(VisualElement element)
         {
             element.CancelAnimations();
             element.Opacity = 1;

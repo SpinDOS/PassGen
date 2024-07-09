@@ -3,8 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:PassGen.Maui"
              x:Class="PassGen.Maui.MainPage"
-             x:Name="_mainPage"
-             Appearing="AppearingEventHandler">
+             x:Name="_mainPage">
     <ContentPage.Resources>
         <local:DoubleWithFactorToThicknessConverter x:Key="AThirdOfHeightMarginConverter" ThicknessFactor="0, 0.33"/>
     </ContentPage.Resources>
@@ -41,7 +40,7 @@
                         HorizontalOptions="Fill"
                         Keyboard="Url"/>
                 </Grid>
-                <StackLayout Orientation="Horizontal">
+                <StackLayout Orientation="Horizontal" HorizontalOptions="Start">
                     <CheckBox IsEnabled="{Binding HasSavedSalt}"
                               IsChecked="{Binding UseSavedSalt, Mode=TwoWay}"
                               VerticalOptions="Center"/>
@@ -49,11 +48,10 @@
                            HorizontalOptions="Start"
                            HorizontalTextAlignment="Start"
                            VerticalOptions="Center"
-                           VerticalTextAlignment="Center">
-                        <Label.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding InvertUseSavedSaltCommand}"/>
-                        </Label.GestureRecognizers>
-                    </Label>
+                           VerticalTextAlignment="Center"/>
+                    <StackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding InvertUseSavedSaltCommand}"/>
+                    </StackLayout.GestureRecognizers>
                 </StackLayout>
                 <Grid x:Name="_saltGroup" IsClippedToBounds="True">
                     <StackLayout Orientation="Vertical">
