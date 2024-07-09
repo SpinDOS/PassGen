@@ -10,18 +10,12 @@ public partial class MainPage : ContentPage
 
 	public MainPage(MainPageViewModel viewModel)
 	{
-		_viewModel = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
 		InitializeComponent();
-	}
-
-	protected override async void OnAppearing()
-	{
-		base.OnAppearing();
-		await _viewModel.LoadDataAsync();
+		_viewModel = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
+		BindingContext = _viewModel;
 		if (_viewModel.UseSavedSalt)
 			_saltGroup.HeightRequest = 0; // collapse group without animation
 		_viewModel.PropertyChanged += ModelPropertyChangedEventHandler;
-		BindingContext = _viewModel;
 	}
 
 	[RelayCommand(CanExecute=nameof(CanCopyToClipboard))]
