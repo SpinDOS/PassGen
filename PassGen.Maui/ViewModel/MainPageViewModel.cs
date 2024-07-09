@@ -110,9 +110,10 @@ public class MainPageViewModel : INotifyPropertyChanged
             _salt = value;
             OnPropertyChanged(nameof(Salt));
 
-            GeneratedPassword = null;
             if (isChangedHasValue)
                 OnPropertyChanged(nameof(HasSalt));
+
+            GeneratedPassword = null;
 
             if (isChangedHasValue)
             {
@@ -159,10 +160,11 @@ public class MainPageViewModel : INotifyPropertyChanged
             _savedSalt = value;
             // SavedSalt is private property, no need to call OnPropertyChanged
 
-            UseSavedSalt = !string.IsNullOrEmpty(value);
-            GeneratedPassword = null;
             if (isChangedHasValue)
                 OnPropertyChanged(nameof(HasSavedSalt));
+
+            UseSavedSalt = !string.IsNullOrEmpty(value);
+            GeneratedPassword = null;
 
             if (isChangedHasValue)
             {
