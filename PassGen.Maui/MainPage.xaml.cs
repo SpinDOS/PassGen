@@ -17,7 +17,7 @@ public partial class MainPage : ContentPage
 	protected override async void OnAppearing()
 	{
 		base.OnAppearing();
-		await _viewModel.LoadDataCommand.ExecuteAsync(null);
+		await _viewModel.LoadDataAsync();
 		if (_viewModel.UseSavedSalt)
 			_saltGroup.HeightRequest = 0; // collapse group without animation
 		_viewModel.PropertyChanged += ModelPropertyChangedEventHandler;

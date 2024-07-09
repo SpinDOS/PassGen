@@ -34,8 +34,7 @@ public partial class MainPageViewModel : ObservableObject
         _passwordGenerator = passwordGenerator ?? throw new ArgumentNullException(nameof(passwordGenerator));
     }
 
-    [RelayCommand]
-    private async Task LoadData() => SavedSalt = await _saltStorage.GetSalt();
+    public async Task LoadDataAsync() => SavedSalt = await _saltStorage.GetSalt();
 
     [RelayCommand(CanExecute=nameof(HasSalt))]
     private async Task SaveSalt()
