@@ -16,6 +16,14 @@ jobs:
         run: dotnet workload install maui
       - name: Restore dependencies
         run: dotnet restore PassGen.Maui
+      - name: Unpack keystore for APK signing
+        shell: pwsh
+        env:
+          PASSGEN_MAUI_KEYSTORE_BASE64: ${{ secrets.PASSGEN_MAUI_KEYSTORE_BASE64 }}
+        working-directory: ./PassGen.Maui
+        run: |
+          echo "$env:PASSGEN_MAUI_KEYSTORE_BASE64" > passgen_maui_base64.txt
+          python -c 'import base64, sys; base64.decode(open(sys.argv[1], "rb"), open(sys.argv[2], "wb"))' passgen_maui_base64.txt passgen_maui.keystore
       - name: Run dotnet publish
         working-directory: ./PassGen.Maui
         run: dotnet publish --no-restore --configuration Release --framework net8.0-android --output ./out
