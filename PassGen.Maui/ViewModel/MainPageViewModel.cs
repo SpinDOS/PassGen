@@ -27,9 +27,8 @@ public class MainPageViewModel : INotifyPropertyChanged
         _saveSaltCommand = new AsyncCommand(
             execute: async() =>
             {
-                var salt = Salt;
-                await saltStorage.SetSalt(salt);
-                SavedSalt = salt;
+                await saltStorage.SetSalt(Salt);
+                SavedSalt = Salt;
                 Salt = null;
                 UseSavedSalt = true;
             },
@@ -40,6 +39,7 @@ public class MainPageViewModel : INotifyPropertyChanged
             {
                 await saltStorage.ClearSalt();
                 SavedSalt = null;
+                UseSavedSalt = false;
             },
             canExecute: () => HasSavedSalt);
 
@@ -52,11 +52,7 @@ public class MainPageViewModel : INotifyPropertyChanged
             canExecute: () => !string.IsNullOrEmpty(TargetSite) && !string.IsNullOrEmpty(SaltToUse));
     }
 
-    public async Task LoadDataAsync()
-    {
-        SavedSalt = await _saltStorage.GetSalt();
-        UseSavedSalt = !string.IsNullOrEmpty(SavedSalt);
-    }
+    public async Task LoadDataAsync() => SavedSalt = await _saltStorage.GetSalt();
 
     public ICommand SaveSaltCommand => _saveSaltCommand;
     public ICommand ClearSavedSaltCommand => _clearSavedSaltCommand;
@@ -71,10 +67,15 @@ public class MainPageViewModel : INotifyPropertyChanged
             if (_targetSite == value)
                 return;
 
+            var isChangedHasValue = string.IsNullOrEmpty(_targetSite) != string.IsNullOrEmpty(value);
+
             _targetSite = value;
             OnPropertyChanged(nameof(TargetSite));
+
             GeneratedPassword = null;
-            _generatePasswordCommand.ChangeCanExecute();
+
+            if (isChangedHasValue)
+                _generatePasswordCommand.ChangeCanExecute();
         }
     }
 
@@ -88,8 +89,10 @@ public class MainPageViewModel : INotifyPropertyChanged
 
             _useSavedSalt = value;
             OnPropertyChanged(nameof(UseSavedSalt));
-            GeneratedPassword = null;
+
             Salt = null;
+            GeneratedPassword = null;
+
             _generatePasswordCommand.ChangeCanExecute();
         }
     }
@@ -102,14 +105,17 @@ public class MainPageViewModel : INotifyPropertyChanged
             if (_salt == value)
                 return;
 
-            var oldValue = _salt;
+            var isChangedHasValue = string.IsNullOrEmpty(_salt) != string.IsNullOrEmpty(value);
+
             _salt = value;
             OnPropertyChanged(nameof(Salt));
-            GeneratedPassword = null;
 
-            if (string.IsNullOrEmpty(oldValue) != string.IsNullOrEmpty(value))
-            {
+            GeneratedPassword = null;
+            if (isChangedHasValue)
                 OnPropertyChanged(nameof(HasSalt));
+
+            if (isChangedHasValue)
+            {
                 _saveSaltCommand.ChangeCanExecute();
                 _generatePasswordCommand.ChangeCanExecute();
             }
@@ -148,16 +154,18 @@ public class MainPageViewModel : INotifyPropertyChanged
             if (_savedSalt == value)
                 return;
 
-            var oldValue = _savedSalt;
+            var isChangedHasValue = string.IsNullOrEmpty(_savedSalt) != string.IsNullOrEmpty(value);
+
             _savedSalt = value;
+            // SavedSalt is private property, no need to call OnPropertyChanged
+
+            UseSavedSalt = !string.IsNullOrEmpty(value);
             GeneratedPassword = null;
-
-            if (string.IsNullOrEmpty(value))
-                UseSavedSalt = false;
-
-            if (string.IsNullOrEmpty(oldValue) != string.IsNullOrEmpty(value))
-            {
+            if (isChangedHasValue)
                 OnPropertyChanged(nameof(HasSavedSalt));
+
+            if (isChangedHasValue)
+            {
                 _clearSavedSaltCommand.ChangeCanExecute();
                 _invertUseSavedSaltCommand.ChangeCanExecute();
                 _generatePasswordCommand.ChangeCanExecute();
