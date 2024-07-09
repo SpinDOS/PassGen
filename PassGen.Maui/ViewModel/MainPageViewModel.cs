@@ -44,11 +44,7 @@ public class MainPageViewModel : INotifyPropertyChanged
             canExecute: () => HasSavedSalt);
 
         _invertUseSavedSaltCommand = new Command(
-            execute: () =>
-            {
-                UseSavedSalt = !UseSavedSalt;
-                Salt = null;
-            },
+            execute: () => UseSavedSalt = !UseSavedSalt,
             canExecute: () => HasSavedSalt);
 
         _generatePasswordCommand = new Command(
@@ -93,6 +89,7 @@ public class MainPageViewModel : INotifyPropertyChanged
             _useSavedSalt = value;
             OnPropertyChanged(nameof(UseSavedSalt));
             GeneratedPassword = null;
+            Salt = null;
             _generatePasswordCommand.ChangeCanExecute();
         }
     }
