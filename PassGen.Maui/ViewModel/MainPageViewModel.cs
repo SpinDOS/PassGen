@@ -30,6 +30,8 @@ public class MainPageViewModel : INotifyPropertyChanged
                 var salt = Salt;
                 await saltStorage.SetSalt(salt);
                 SavedSalt = salt;
+                Salt = null;
+                UseSavedSalt = true;
             },
             canExecute: () => HasSalt);
 
