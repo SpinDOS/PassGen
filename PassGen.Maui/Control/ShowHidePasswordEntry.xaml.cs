@@ -1,3 +1,5 @@
+using System.Windows.Input;
+
 namespace PassGen.Maui;
 
 [XamlCompilation(XamlCompilationOptions.Compile)]
@@ -6,6 +8,7 @@ public partial class ShowHidePasswordEntry : Grid
     public static readonly BindableProperty HiddenProperty = BindableProperty.Create(nameof(Hidden), typeof(bool), typeof(ShowHidePasswordEntry), true);
     public static readonly BindableProperty TextProperty = BindableProperty.Create(nameof(Text), typeof(string), typeof(ShowHidePasswordEntry));
     public static readonly BindableProperty PlaceholderProperty = BindableProperty.Create(nameof(Placeholder), typeof(string), typeof(ShowHidePasswordEntry));
+    public static readonly BindableProperty ReturnCommandProperty = BindableProperty.Create(nameof(ReturnCommand), typeof(ICommand), typeof(ShowHidePasswordEntry));
 
     public ShowHidePasswordEntry() { InitializeComponent(); }
 
@@ -20,11 +23,17 @@ public partial class ShowHidePasswordEntry : Grid
         get => (string) GetValue(TextProperty);
         set => SetValue(TextProperty, value);
     }
-    
+
     public string Placeholder
     {
         get => (string) GetValue(PlaceholderProperty);
         set => SetValue(PlaceholderProperty, value);
+    }
+
+    public ICommand ReturnCommand
+    {
+        get => (ICommand) GetValue(ReturnCommandProperty);
+        set => SetValue(ReturnCommandProperty, value);
     }
 
     private void ShowHideButtonClickedEventHandler(object sender, EventArgs args) => Hidden = !Hidden;
