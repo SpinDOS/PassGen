@@ -1,6 +1,10 @@
 name: Build Maui Android APK file
 
-on: workflow_dispatch
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
 
 jobs:
   build_and_upload:
@@ -25,8 +29,10 @@ jobs:
           echo "$env:PASSGEN_MAUI_KEYSTORE_BASE64" > passgen_maui_base64.txt
           python -c 'import base64, sys; base64.decode(open(sys.argv[1], "rb"), open(sys.argv[2], "wb"))' passgen_maui_base64.txt passgen_maui.keystore
       - name: Run dotnet publish
+        env:
+          PASSGEN_MAUI_KEYSTORE_PASSWORD: ${{ secrets.PASSGEN_MAUI_KEYSTORE_PASSWORD }}
         working-directory: ./PassGen.Maui
-        run: dotnet publish --no-restore --configuration Release --framework net8.0-android --output ./out
+        run: dotnet publish --no-restore --configuration Release --framework net8.0-android --output ./out -p:AndroidKeyStore=true -p:AndroidSigningKeyStore=passgen_maui.keystore -p:AndroidSigningKeyAlias=passgen_maui -p:AndroidSigningKeyPass=env:PASSGEN_MAUI_KEYSTORE_PASSWORD -p:AndroidSigningStorePass=env:PASSGEN_MAUI_KEYSTORE_PASSWORD
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v4
         with:
