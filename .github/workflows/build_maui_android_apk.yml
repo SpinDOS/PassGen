@@ -11,27 +11,27 @@ jobs:
     name: Build and upload APK
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 8.0.x
-      - name: Install .NET MAUI
-        run: dotnet workload install maui
-      - name: Restore dependencies
-        run: dotnet restore PassGen.Maui
-      - name: Prepare keystore for APK signing
-        shell: bash
-        env:
-          PASSGEN_MAUI_KEYSTORE_BASE64: ${{ secrets.PASSGEN_MAUI_KEYSTORE_BASE64 }}
-        run: echo "$PASSGEN_MAUI_KEYSTORE_BASE64" | base64 --decode > ./PassGen.Maui/passgen_maui.keystore
-      - name: Run dotnet publish
-        working-directory: ./PassGen.Maui
-        env:
-          PASSGEN_MAUI_KEYSTORE_PASSWORD: ${{ secrets.PASSGEN_MAUI_KEYSTORE_PASSWORD }}
-        run: dotnet publish --no-restore --configuration Release --framework net8.0-android --output ./out -p:AndroidKeyStore=true -p:AndroidSigningKeyStore=passgen_maui.keystore -p:AndroidSigningKeyAlias=passgen_maui -p:AndroidSigningKeyPass=env:PASSGEN_MAUI_KEYSTORE_PASSWORD -p:AndroidSigningStorePass=env:PASSGEN_MAUI_KEYSTORE_PASSWORD
-      - name: Upload a Build Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: com.alexanderplat.passgen.maui-Signed.apk
-          path: ./PassGen.Maui/out/com.alexanderplat.passgen.maui-Signed.apk
+    - uses: actions/checkout@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+    - name: Install .NET MAUI
+      run: dotnet workload install maui
+    - name: Restore dependencies
+      run: dotnet restore PassGen.Maui
+    - name: Prepare keystore for APK signing
+      shell: bash
+      env:
+        PASSGEN_MAUI_KEYSTORE_BASE64: ${{ secrets.PASSGEN_MAUI_KEYSTORE_BASE64 }}
+      run: echo "$PASSGEN_MAUI_KEYSTORE_BASE64" | base64 --decode > ./PassGen.Maui/passgen_maui.keystore
+    - name: Run dotnet publish
+      working-directory: ./PassGen.Maui
+      env:
+        PASSGEN_MAUI_KEYSTORE_PASSWORD: ${{ secrets.PASSGEN_MAUI_KEYSTORE_PASSWORD }}
+      run: dotnet publish --no-restore --configuration Release --framework net8.0-android --output ./out -p:AndroidKeyStore=true -p:AndroidSigningKeyStore=passgen_maui.keystore -p:AndroidSigningKeyAlias=passgen_maui -p:AndroidSigningKeyPass=env:PASSGEN_MAUI_KEYSTORE_PASSWORD -p:AndroidSigningStorePass=env:PASSGEN_MAUI_KEYSTORE_PASSWORD
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: com.alexanderplat.passgen.maui-Signed.apk
+        path: ./PassGen.Maui/out/com.alexanderplat.passgen.maui-Signed.apk
