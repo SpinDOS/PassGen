@@ -7,10 +7,6 @@ namespace PassGen.GlobalTool;
 
 public sealed class WindowsCredentialsManager
 {
-    private const string DllNameAdvapi = "Advapi32.dll";
-    private const int CredentialTypeGeneric = 1;
-    private const int ErrorCodeNotFound = 1168;
-
     private static Lazy<WindowsCredentialsManager> _singleton =
         new Lazy<WindowsCredentialsManager>(() => new WindowsCredentialsManager(), true);
 
@@ -21,9 +17,9 @@ public sealed class WindowsCredentialsManager
 
     public string GetPassword(string key)
     {
-        if (!CredRead(key, CredentialTypeGeneric, 0, out var credHandleRaw))
+        if (!CredRead(key, CRED_TYPE.GENERIC, 0, out var credHandleRaw))
         {
-            if (Marshal.GetLastWin32Error() == ErrorCodeNotFound)
+            if (Marshal.GetLastWin32Error() == ERROR_NOT_FOUND)
                 throw new NotFoundException();
             throw new Exception("Unable to Read Credential");
         }
@@ -32,9 +28,9 @@ public sealed class WindowsCredentialsManager
         if (credHandle.IsInvalid)
             throw new Exception("Windows api returned invalid credentials handle");
 
-        var credentials = Marshal.PtrToStructure<NativeCredential>(credHandle.RawHandle);
-        return credentials.CredentialBlobSize >= 2
-            ? Marshal.PtrToStringUni(credentials.CredentialBlob, (int)credentials.CredentialBlobSize / 2)
+        var credentialData = Marshal.PtrToStructure<CredentialData>(credHandle.RawHandle);
+        return credentialData.CredentialBlob != IntPtr.Zero && credentialData.CredentialBlobSize >= 2
+            ? Marshal.PtrToStringUni(credentialData.CredentialBlob, (int)credentialData.CredentialBlobSize / 2)
             : string.Empty;
     }
 
@@ -56,30 +52,47 @@ public sealed class WindowsCredentialsManager
         }
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-    private struct NativeCredential
+    private const string DllNameAdvapi = "advapi32.dll";
+    private const int ERROR_NOT_FOUND = 1168;
+
+    private enum CRED_PERSIST : uint
     {
-        public UInt32 Flags;
-        public UInt32 Type;
-        [MarshalAs(UnmanagedType.LPWStr)]
+        CRED_PERSIST_SESSION = 1,
+        CRED_PERSIST_LOCAL_MACHINE = 2,
+        CRED_PERSIST_ENTERPRISE = 3
+    }
+
+    private enum CRED_TYPE
+    {
+        GENERIC = 1,
+        DOMAIN_PASSWORD = 2,
+        DOMAIN_CERTIFICATE = 3,
+        DOMAIN_VISIBLE_PASSWORD = 4,
+        MAXIMUM = 5
+    }
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    private struct CredentialData
+    {
+        public uint Flags;
+        public CRED_TYPE Type;
         public string TargetName;
-        [MarshalAs(UnmanagedType.LPWStr)]
         public string Comment;
         public System.Runtime.InteropServices.ComTypes.FILETIME LastWritten;
-        public UInt32 CredentialBlobSize;
+        public uint CredentialBlobSize;
         public IntPtr CredentialBlob;
-        public UInt32 Persist;
-        public UInt32 AttributeCount;
+        public CRED_PERSIST Persist;
+        public uint AttributeCount;
         public IntPtr Attributes;
-        [MarshalAs(UnmanagedType.LPWStr)]
         public string TargetAlias;
-        [MarshalAs(UnmanagedType.LPWStr)]
         public string UserName;
     }
 
     [DllImport(DllNameAdvapi, EntryPoint = "CredReadW", CharSet = CharSet.Unicode, SetLastError = true)]
-    private static extern bool CredRead([MarshalAs(UnmanagedType.LPWStr)]string target, uint type, int reservedFlag, out IntPtr CredentialPtr);
+    [DefaultDllImportSearchPaths(DllImportSearchPath.System32 | DllImportSearchPath.AssemblyDirectory)]
+    private static extern bool CredRead(string target, CRED_TYPE type, int reservedFlag, out IntPtr userCredential);
 
-    [DllImport(DllNameAdvapi, EntryPoint = "CredFree", SetLastError = true)]
-    private static extern bool CredFree([In] IntPtr cred);
+    [DllImport(DllNameAdvapi, SetLastError = true)]
+    [DefaultDllImportSearchPaths(DllImportSearchPath.System32 | DllImportSearchPath.AssemblyDirectory)]
+    private static extern void CredFree([In] IntPtr buffer);
 }
