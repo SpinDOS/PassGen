@@ -26,7 +26,7 @@ jobs:
       env:
         PASSGEN_MAUI_KEYSTORE_PASSWORD: ${{ secrets.PASSGEN_MAUI_KEYSTORE_PASSWORD }}
       run: dotnet publish --no-restore --configuration Release --framework net8.0-android --output ./out -p:AndroidKeyStore=true -p:AndroidSigningKeyStore=passgen_maui.keystore -p:AndroidSigningKeyAlias=passgen_maui -p:AndroidSigningKeyPass=env:PASSGEN_MAUI_KEYSTORE_PASSWORD -p:AndroidSigningStorePass=env:PASSGEN_MAUI_KEYSTORE_PASSWORD
-    - name: Upload a Build Artifact
+    - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
         name: com.alexanderplat.passgen.maui-Signed.apk
