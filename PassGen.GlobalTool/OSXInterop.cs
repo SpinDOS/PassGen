@@ -114,7 +114,7 @@ public sealed class OSXKeyChain
     private static string GetCFString(IntPtr handle)
     {
         var len = (int)CFStringGetLength(handle);
-        var buf = Marshal.AllocHGlobal(len * 4 + 1);
+        var buf = Marshal.AllocHGlobal(len * 4 + 2);
         try {
             CFStringGetCharacters(handle, new CFRange { Location = (IntPtr)0, Length = (IntPtr)len }, buf);
             return Marshal.PtrToStringUni(buf, len);
