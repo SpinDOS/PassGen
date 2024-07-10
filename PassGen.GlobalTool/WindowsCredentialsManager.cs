@@ -1,6 +1,7 @@
 # nullable enable
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
+using System.Text;
 using Microsoft.Win32.SafeHandles;
 
 namespace PassGen.GlobalTool;
@@ -29,9 +30,11 @@ public sealed class WindowsCredentialsManager
             throw new Exception("Windows api returned invalid credentials handle");
 
         var credentialData = Marshal.PtrToStructure<CredentialData>(credHandle.RawHandle);
-        return credentialData.CredentialBlob != IntPtr.Zero && credentialData.CredentialBlobSize >= 2
-            ? Marshal.PtrToStringUni(credentialData.CredentialBlob, (int)credentialData.CredentialBlobSize / 2)
-            : string.Empty;
+        if (credentialData.CredentialBlob == IntPtr.Zero || credentialData.CredentialBlobSize == 0)
+            return string.Empty;
+        var blobBytes = new byte[credentialData.CredentialBlobSize];
+        Marshal.Copy(credentialData.CredentialBlob, blobBytes, 0, blobBytes.Length);
+        return Encoding.Unicode.GetString(blobBytes);
     }
 
     private WindowsCredentialsManager() {}
