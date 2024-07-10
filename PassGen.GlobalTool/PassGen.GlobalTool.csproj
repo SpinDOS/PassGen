@@ -5,11 +5,12 @@
         <ToolCommandName>passgen</ToolCommandName>
         <OutputType>Exe</OutputType>
         <TargetFramework>net7.0</TargetFramework>
+		    <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
 
     <PropertyGroup>
         <PackageId>passgen</PackageId>
-        <Version>1.2.2</Version>
+        <Version>1.2.3</Version>
         <Authors>SpinDOS</Authors>
         <RepositoryUrl>https://github.com/SpinDOS/PassGen</RepositoryUrl>
     </PropertyGroup>
