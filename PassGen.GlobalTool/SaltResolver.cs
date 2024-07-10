@@ -1,5 +1,4 @@
 # nullable enable
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using AdysTech.CredentialManager;
 
@@ -30,42 +29,18 @@ public sealed class SaltResolver
 
 	private string? TryExtractSaltFromMacOSXKeychain()
 	{
-		if (!IsOSX)
+		if (!RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
 			return null;
-
-		const string errorMessageProlog = "security tool error";
-		var processStartInfo = new ProcessStartInfo()
-		{
-			FileName = "security",
-			CreateNoWindow = true,
-			RedirectStandardInput = true,
-			RedirectStandardOutput = true,
-			RedirectStandardError = true,
-		};
-
-		var args = new string[] {"find-generic-password", "-a", Environment.UserName, "-s", PgSalt, "-w"};
-		foreach (var arg in args)
-		    processStartInfo.ArgumentList.Add(arg);
-
-		using var process = Process.Start(processStartInfo);
-		if (process == null)
-			throw new LoggedException($"{errorMessageProlog}: failed to start");
 
 		try
 		{
-			if (!process.WaitForExit(TimeSpan.FromMinutes(1)))
-			    throw new LoggedException($"{errorMessageProlog}: process has not finished within 10 seconds");
+			var (username, password) = OSXKeyChain.Instance.Query(PgSalt);
+			return password;
 		}
-		finally
+		catch (OSXKeyChain.NotFoundException)
 		{
-			if (!process.HasExited)
-				process.Kill(true);
+			return null;
 		}
-
-		if (process.ExitCode != 0)
-			return null; // missing credential results in non-zero exit code
-
-		return process.StandardOutput.ReadToEnd()?.Trim();
 	}
 
     private string? TryExtractSaltFromLinuxHomeDirectory()
