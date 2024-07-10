@@ -11,7 +11,7 @@
 
     <PropertyGroup>
         <PackageId>passgen</PackageId>
-        <Version>1.2.6</Version>
+        <Version>1.2.7</Version>
         <Authors>SpinDOS</Authors>
         <RepositoryUrl>https://github.com/SpinDOS/PassGen</RepositoryUrl>
     </PropertyGroup>
