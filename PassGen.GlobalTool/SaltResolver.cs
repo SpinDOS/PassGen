@@ -1,6 +1,5 @@
 # nullable enable
 using System.Runtime.InteropServices;
-using AdysTech.CredentialManager;
 
 namespace PassGen.GlobalTool;
 
@@ -24,8 +23,20 @@ public sealed class SaltResolver
 
     private string? TryExtractSaltFromEnvironment() => Environment.GetEnvironmentVariable(PgSalt);
 
-    private string? TryExtractSaltFromWindowsCredentialManager() =>
-		IsWindows ? CredentialManager.GetCredentials(PgSalt)?.Password : null;
+    private string? TryExtractSaltFromWindowsCredentialManager()
+	{
+		if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+		    return null;
+
+		try
+		{
+			return WindowsCredentialsManager.Instance.GetPassword(PgSalt);
+		}
+		catch (WindowsCredentialsManager.NotFoundException)
+		{
+			return null;
+		}
+	}
 
 	private string? TryExtractSaltFromMacOSXKeychain()
 	{
@@ -34,8 +45,7 @@ public sealed class SaltResolver
 
 		try
 		{
-			var (username, password) = OSXKeyChain.Instance.Query(PgSalt);
-			return password;
+			return OSXKeyChain.Instance.Query(PgSalt).password;
 		}
 		catch (OSXKeyChain.NotFoundException)
 		{

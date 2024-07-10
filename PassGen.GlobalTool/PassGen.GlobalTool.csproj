@@ -11,17 +11,13 @@
 
     <PropertyGroup>
         <PackageId>passgen</PackageId>
-        <Version>1.2.5</Version>
+        <Version>1.2.6</Version>
         <Authors>SpinDOS</Authors>
         <RepositoryUrl>https://github.com/SpinDOS/PassGen</RepositoryUrl>
     </PropertyGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\PassGen.Lib\PassGen.Lib.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <PackageReference Include="AdysTech.CredentialManager" Version="2.6.0" />
     </ItemGroup>
 
 </Project>
