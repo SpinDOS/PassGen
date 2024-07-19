@@ -6,41 +6,36 @@ namespace PassGen.Web.Controllers
 {
     [ApiController]
     [Route("/api/v1/[action]")]
-    [RequireHttps]
     public class ApiV1Controller : Controller
     {
+        private const string RequestHeaderXPassgenSalt = "X-PASSGEN-SALT";
+        private const string ResponseHeaderXPassgenGeneratedPassword = "X-PASSGEN-GENERATED-PASSWORD";
         private readonly PasswordGenerator _passwordGenerator = new PasswordGenerator();
 
         [HttpGet]
         public IActionResult Hello()
         {
-            return Ok(new {Message = "Hello, world",});
+            return Ok(new {Message = "Hello, world"});
         }
-        
+
         [HttpPost]
-        public IActionResult GeneratePassword([FromBody] GeneratePasswordRequest passwordRequest)
+        [RequireHttps]
+        public IActionResult GeneratePassword([FromBody] GeneratePasswordRequest passwordRequest, [FromHeader(Name = RequestHeaderXPassgenSalt)] string salt)
         {
             if (passwordRequest == null)
                 return BadRequest("password request not found");
             if (string.IsNullOrEmpty(passwordRequest.TargetSite))
                 return BadRequest($"Empty {nameof(passwordRequest.TargetSite)}");
-            if (string.IsNullOrEmpty(passwordRequest.Salt))
-                return BadRequest($"Empty {nameof(passwordRequest.Salt)}");
-            
-            var generatedPassword = _passwordGenerator.GeneratePassword(passwordRequest.TargetSite, passwordRequest.Salt);
-            return Ok(new GeneratePasswordResponse {GeneratedPassword = generatedPassword,});
+            if (string.IsNullOrEmpty(salt))
+                return BadRequest($"Empty header {RequestHeaderXPassgenSalt}");
+
+            Response.Headers[ResponseHeaderXPassgenGeneratedPassword] = _passwordGenerator.GeneratePassword(passwordRequest.TargetSite, salt);
+            return Ok(new {Message = $"Password successfully generated. See header {ResponseHeaderXPassgenGeneratedPassword}"});
         }
 
         public sealed class GeneratePasswordRequest
         {
             public string TargetSite { get; set; }
-            
-            public string Salt { get; set; }
-        }
-
-        public sealed class GeneratePasswordResponse
-        {
-            public string GeneratedPassword { get; set; }
         }
     }
 }

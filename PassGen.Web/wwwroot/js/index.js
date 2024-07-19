@@ -11,9 +11,9 @@ function changePageVisualState() {
     const btn = $("#btnGenerate");
     const progressSpinner = $(btn.children()[0]);
     const text = $(btn.children()[1]);
-    
+
     const isRequestInProgress = runningRequestInfo != null;
-    
+
     btn.prop("disabled", isRequestInProgress || !($("#targetSite").val()) || !($("#salt").val()));
 
     progressSpinner.css({display: isRequestInProgress ? "inline-block" : "none"});
@@ -34,10 +34,10 @@ function changeState(currentRequestInfo, generatedPassword, error) {
     txtGeneratedPassword.val(generatedPassword || "");
     txtGeneratedPassword.change();
     hasPassword = !!generatedPassword;
-    
+
     $("#errorLabel").text(error || "");
     hasError = !!error;
-    
+
     changePageVisualState();
 }
 
@@ -45,13 +45,12 @@ function onInputChange() {
     changeState(null, null, null);
 }
 
-function onSuccess(data) {
-    data = data || {};
-    const generatedPassword = data.generatedPassword;
+function onSuccess(data, textStatus, request) {
+    const generatedPassword = request.getResponseHeader("X-PASSGEN-GENERATED-PASSWORD");
     if (generatedPassword) {
         changeState(null, generatedPassword, null);
     } else {
-        changeState(null, null, "Invalid server response: empty GeneratedPassword");
+        changeState(null, null, "Invalid server response: empty generated password");
     }
 }
 
@@ -68,9 +67,10 @@ function generatePasswordClick(event) {
         url: "/api/v1/GeneratePassword",
         headers: {
             "Accept": "application/json",
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "X-PASSGEN-SALT": $("#salt").val(),
         },
-        data: JSON.stringify({ TargetSite: $("#targetSite").val(), Salt: $("#salt").val() }),
+        data: JSON.stringify({ TargetSite: $("#targetSite").val() }),
         dataType: "json",
         success: onSuccess,
         error: function (error) {
@@ -86,7 +86,7 @@ $(document).ready(function() {
     $("#salt").on("keyup change", onInputChange);
     $("#targetSite").on("keyup change", onInputChange);
     $("#btnGenerate").on("click", generatePasswordClick);
-    
+
     $(".collapse").on("hidden.bs.collapse shown.bs.collapse", changePageVisualState);
 
     changePageVisualState();
