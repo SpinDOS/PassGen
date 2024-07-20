@@ -39,10 +39,7 @@ The *.apk can be found as an artifact of the latest build of [Build Maui.Android
 
 ### 3. Web interface for accessing with any browser
 
-NOTE: this method does not work!!! 
-It's not supported now.
-
-The service is hosted in Azure and can be accessed by the following link: https://passgen-alexanderplat.azurewebsites.net
+The service is hosted in Render and can be accessed by the following link: https://passgen-of3q.onrender.com
 
 <details>
 <summary>Example of password generating</summary>
