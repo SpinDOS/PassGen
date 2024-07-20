@@ -64,3 +64,18 @@ jobs:
         dotnet-version: 8.0.x
     - name: Build project
       run: dotnet build PassGen.Web
+  nginx-docker:
+    name: Build PassGen.Nginx Docker
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v3
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    - name: Build Docker image
+      uses: docker/build-push-action@v6
+      with:
+        context: ./PassGen.Nginx
+        push: false
+        tags: passgen-nginx
