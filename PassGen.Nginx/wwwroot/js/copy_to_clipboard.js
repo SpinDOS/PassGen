@@ -2,29 +2,31 @@ function enableDisableCopyToClipboardBtn(btnCopyToClipboard, txtBoxToCopy) {
     btnCopyToClipboard.prop("disabled", !txtBoxToCopy.val());
 }
 
-function copyTextToClipboard(txtBoxToCopy) {
-    const textToCopy = txtBoxToCopy.val();
-
-    const temp = $("<input>");
-    temp.css({position: "absolute", left: "-9999px", width: "1000px"});
-    $("body").append(temp);
-    temp.val(textToCopy).select();
-    document.execCommand("copy");
-    temp.remove();
-}
-
-function showCopyToClipboardTooltip(btnCopyToClipboard) {
+function showCopyToClipboardTooltip(btnCopyToClipboard, tooltipTitle) {
     const timerKey = "copy_to_clipboard_timer";
     const tooltipTimeout = 3000;
-    
-    btnCopyToClipboard.tooltip("show");
+
     clearTimeout(btnCopyToClipboard.data(timerKey));
-    
+
+    btnCopyToClipboard
+        .attr("title", tooltipTitle)
+        .attr("data-original-title", tooltipTitle)
+        .tooltip("update")
+        .tooltip("show");
+
     const copyToClipboardTimer = setTimeout(function () {
         btnCopyToClipboard.tooltip("hide");
     }, tooltipTimeout);
-
     btnCopyToClipboard.data(timerKey, copyToClipboardTimer);
+}
+
+function copyTextToClipboard(btnCopyToClipboard, txtBoxToCopy) {
+    const textToCopy = txtBoxToCopy.val();
+    navigator.clipboard.writeText(textToCopy).then(function () {
+        showCopyToClipboardTooltip(btnCopyToClipboard, "Copied");
+    }, function () {
+        showCopyToClipboardTooltip(btnCopyToClipboard, "Error: failed to copy");
+    });
 }
 
 $(document).ready(function() {
@@ -36,8 +38,7 @@ $(document).ready(function() {
             enableDisableCopyToClipboardBtn(btnCopyToClipboard, txtBoxToCopy);
         });
         btnCopyToClipboard.on("click", function () {
-            copyTextToClipboard(txtBoxToCopy);
-            showCopyToClipboardTooltip(btnCopyToClipboard);
+            copyTextToClipboard(btnCopyToClipboard, txtBoxToCopy);
         });
     });
 });
