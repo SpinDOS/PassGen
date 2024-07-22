@@ -1,4 +1,6 @@
-﻿function changePageVisualState() {
+﻿import generatePassword from "./passgen.mjs";
+
+function changePageVisualState() {
     $("#btnGenerate").prop("disabled", !($("#targetSite").val()) || !($("#salt").val()));
     const hasGeneratedPassword = !!($("#generatedPassword").val());
     $("#generatedPasswordGroup").collapse(hasGeneratedPassword ? "show" : "hide");
